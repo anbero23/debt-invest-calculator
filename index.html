@@ -11,22 +11,22 @@
 
   <style>
     :root{
-      --bg:#f8f3f5;
-      --card:#ffffff;
-      --sidebar:#5b1027;
-      --sidebar-hover:#7a1938;
-      --primary:#7b1737;
-      --primary-dark:#5a0f27;
-      --accent:#b04a6a;
-      --soft:#f4e7ec;
-      --soft-2:#f8edf1;
-      --text:#24161c;
-      --muted:#6b5560;
-      --border:#e7d6dd;
-      --success:#205c3b;
-      --warn:#7a4a00;
-      --shadow:0 14px 36px rgba(91,16,39,.10);
-    }
+  --bg:#f8f3f5;
+  --card:#ffffff;
+  --sidebar:#6C1D45;
+  --sidebar-hover:#7F2952;
+  --primary:#7A1F4B;
+  --primary-dark:#5A1637;
+  --accent:#B55A7A;
+  --soft:#F4E7EC;
+  --soft-2:#FAF1F5;
+  --text:#24161c;
+  --muted:#6b5560;
+  --border:#E9D8E1;
+  --success:#205c3b;
+  --warn:#7a4a00;
+  --shadow:0 14px 36px rgba(108,29,69,.10);
+  }
 
     * { box-sizing:border-box; }
 
@@ -404,11 +404,22 @@
     }
 
     .summary-row{
-      display:grid;
-      grid-template-columns: repeat(4, minmax(140px,1fr));
-      gap:12px;
-      margin-bottom:18px;
-    }
+  display:grid;
+  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+  gap:12px;
+  margin-bottom:18px;
+}
+
+.metric .v{
+  font-size:clamp(18px, 2vw, 24px);
+  font-weight:700;
+  line-height:1.15;
+  overflow-wrap:anywhere;
+}
+
+.metric{
+  min-width:0;
+}
 
     .empty{
       color:var(--muted);
@@ -619,6 +630,8 @@
 
             <div class="toolbar">
               <button class="btn" onclick="runDebtSchedule()">Generate Schedule</button>
+              <button class="btn btn-secondary" onclick="exportScheduleCSV()">Export Schedule CSV</button>
+              <button class="btn btn-secondary" onclick="downloadSchedulePDF()">Download Schedule PDF</button>
               <button class="btn btn-secondary" onclick="loadScheduleExample()">Load Example</button>
             </div>
           </div>
@@ -652,58 +665,64 @@
 
           <div class="fields">
             <div class="field">
-              <label>Amortization Mode</label>
-              <select id="simMode">
-                <option value="reducePayment">Amortize reducing payment</option>
-                <option value="reduceTerm">Amortize reducing term</option>
-              </select>
-              <div class="help">
-                Reduce payment: remaining term stays fixed and the payment is recalculated after extra amortization.
-                Reduce term: payment stays the same and the term shortens.
-              </div>
-            </div>
+  <label>Amortization Mode</label>
+  <select id="simMode">
+    <option value="reducePayment">Amortize reducing payment</option>
+    <option value="reduceTerm">Amortize reducing term</option>
+  </select>
+</div>
 
-            <div class="field">
-              <label>Debt Amount</label>
-              <div class="input-group">
-                <span class="prefix">$</span>
-                <input type="text" id="simDebt" class="money-input" value="73,847.50" />
-              </div>
-            </div>
+<div class="field">
+  <label>Known Input Type</label>
+  <select id="simKnownType" onchange="toggleSimKnownType()">
+    <option value="rate" selected>I know the rate</option>
+    <option value="payment">I know the monthly payment</option>
+  </select>
+  <div class="help">
+    Use rate if you know the nominal loan rate. Use payment if your real installment includes other items and you want the schedule to fit the actual payment.
+  </div>
+</div>
 
-            <div class="field">
-              <label>Interest Rate</label>
-              <div class="input-group">
-                <input type="number" id="simRate" step="0.01" value="8.20" />
-                <span class="suffix">%</span>
-              </div>
-            </div>
+<div class="field">
+  <label>Debt Amount</label>
+  <div class="input-group">
+    <span class="prefix">$</span>
+    <input type="text" id="simDebt" class="money-input" value="73,847.50" />
+  </div>
+</div>
 
-            <div class="field">
-              <label>Period</label>
-              <div class="inline-2">
-                <input type="number" id="simMonths" step="1" value="110" />
-                <select disabled>
-                  <option selected>Months</option>
-                </select>
-              </div>
-            </div>
+<div class="field">
+  <label>Period</label>
+  <div class="inline-2">
+    <input type="number" id="simMonths" step="1" value="110" />
+    <select disabled>
+      <option selected>Months</option>
+    </select>
+  </div>
+</div>
 
-            <div class="field">
-              <label>Monthly Payment</label>
-              <div class="input-group">
-                <span class="prefix">$</span>
-                <input type="text" id="simPayment" class="money-input" value="957.16" />
-              </div>
-              <div class="help">
-                You can enter the contractual monthly payment directly. The simulator uses it as the base scheduled payment.
-              </div>
-            </div>
+<div class="field" id="simRateField">
+  <label>Interest Rate</label>
+  <div class="input-group">
+    <input type="number" id="simRate" step="0.01" value="8.20" />
+    <span class="suffix">%</span>
+  </div>
+</div>
 
-            <div class="toolbar">
-              <button class="btn" onclick="initializeSimulation()">Build Simulation</button>
-              <button class="btn btn-secondary" onclick="loadSimulationExample()">Load Example</button>
-            </div>
+<div class="field" id="simPaymentField">
+  <label>Monthly Payment</label>
+  <div class="input-group">
+    <span class="prefix">$</span>
+    <input type="text" id="simPayment" class="money-input" value="1,026.43" />
+  </div>
+</div>
+
+<div class="toolbar">
+  <button class="btn" onclick="initializeSimulation()">Build Simulation</button>
+  <button class="btn btn-secondary" onclick="loadSimulationExample()">Load Example</button>
+  <button class="btn btn-secondary" onclick="exportSimulationCSV()">Export Simulation CSV</button>
+  <button class="btn btn-secondary" onclick="downloadSimulationPDF()">Download Simulation PDF</button>
+</div>
           </div>
         </div>
 
@@ -739,6 +758,95 @@
       rows: []
     };
 
+    function toggleSimKnownType(){
+  const type = document.getElementById('simKnownType').value;
+  const rateField = document.getElementById('simRateField');
+  const paymentField = document.getElementById('simPaymentField');
+
+  if(type === 'rate'){
+    rateField.style.display = '';
+    paymentField.style.display = '';
+  } else {
+    rateField.style.display = '';
+    paymentField.style.display = '';
+  }
+}
+    function inferMonthlyRateFromPayment(principal, payment, months){
+  if(principal <= 0 || payment <= 0 || months <= 0) return 0;
+
+  let low = 0;
+  let high = 1; // 100% mensual como techo extremo
+  for(let i = 0; i < 100; i++){
+    const mid = (low + high) / 2;
+    const estPayment = mid === 0
+      ? principal / months
+      : principal * (mid * Math.pow(1 + mid, months)) / (Math.pow(1 + mid, months) - 1);
+
+    if(estPayment > payment){
+      high = mid;
+    } else {
+      low = mid;
+    }
+  }
+  return (low + high) / 2;
+}
+    let lastScheduleRows = [];
+
+function exportRowsToCSV(filename, rows, columns){
+  let csv = columns.map(c => `"${c.label}"`).join(',') + '\n';
+
+  rows.forEach(row => {
+    csv += columns.map(c => `"${(row[c.key] ?? '')}"`).join(',') + '\n';
+  });
+
+  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+  const link = document.createElement('a');
+  link.href = URL.createObjectURL(blob);
+  link.download = filename;
+  link.click();
+}
+
+function exportScheduleCSV(){
+  if(!lastScheduleRows.length) return;
+
+  exportRowsToCSV('debt_schedule.csv', lastScheduleRows.map(r => ({
+    paymentNumber: r.paymentNumber,
+    beginningBalance: r.beginningBalance.toFixed(2),
+    principalPaid: r.principalPaid.toFixed(2),
+    interest: r.interest.toFixed(2),
+    payment: r.payment.toFixed(2),
+    endingBalance: r.endingBalance.toFixed(2)
+  })), [
+    { key:'paymentNumber', label:'Payment #' },
+    { key:'beginningBalance', label:'Beginning Balance' },
+    { key:'principalPaid', label:'Principal' },
+    { key:'interest', label:'Interest' },
+    { key:'payment', label:'Payment' },
+    { key:'endingBalance', label:'Ending Balance' }
+  ]);
+}
+
+function exportSimulationCSV(){
+  if(!simState.rows.length) return;
+
+  exportRowsToCSV('simulation_amortization.csv', simState.rows.map(r => ({
+    paymentNumber: r.paymentNumber,
+    beginningBalance: r.beginningBalance.toFixed(2),
+    principalPaid: r.principalPaid.toFixed(2),
+    interest: r.interest.toFixed(2),
+    payment: r.payment.toFixed(2),
+    extraPrincipal: r.extraPrincipal.toFixed(2),
+    endingBalance: r.endingBalance.toFixed(2)
+  })), [
+    { key:'paymentNumber', label:'Payment #' },
+    { key:'beginningBalance', label:'Beginning Balance' },
+    { key:'principalPaid', label:'Principal' },
+    { key:'interest', label:'Interest' },
+    { key:'payment', label:'Payment' },
+    { key:'extraPrincipal', label:'Additional Amortization' },
+    { key:'endingBalance', label:'Ending Balance' }
+  ]);
+}
     function showPage(pageId, btn){
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
       document.getElementById(pageId).classList.add('active');
@@ -1200,20 +1308,51 @@
       document.getElementById('schedTermUnit').value = 'months';
       document.getElementById('schedPayment').value = '';
       runDebtSchedule();
+      lastScheduleRows = schedule.rows;
     }
 
     function initializeSimulation(){
-      const debt = parseMoney(document.getElementById('simDebt').value);
-      const annualRate = parseFloat(document.getElementById('simRate').value || 0) / 100;
-      const months = Math.round(parseFloat(document.getElementById('simMonths').value || 0));
-      const payment = parseMoney(document.getElementById('simPayment').value);
-      const mode = document.getElementById('simMode').value;
+  const debt = parseMoney(document.getElementById('simDebt').value);
+  const months = Math.round(parseFloat(document.getElementById('simMonths').value || 0));
+  const payment = parseMoney(document.getElementById('simPayment').value);
+  const knownType = document.getElementById('simKnownType').value;
+  const mode = document.getElementById('simMode').value;
 
-      if(debt <= 0 || annualRate < 0 || months <= 0 || payment <= 0){
-        document.getElementById('simSummary').innerHTML = '<div class="callout warn">Please enter valid inputs for the simulation.</div>';
-        document.getElementById('simTableWrap').innerHTML = '';
-        return;
-      }
+  let annualRate = 0;
+  let finalPayment = payment;
+
+  if(knownType === 'rate'){
+    annualRate = parseFloat(document.getElementById('simRate').value || 0) / 100;
+
+    if(finalPayment <= 0){
+      finalPayment = paymentFromLoan(debt, annualRate, months);
+      document.getElementById('simPayment').value = formatMoney(finalPayment);
+    }
+  } else {
+    finalPayment = parseMoney(document.getElementById('simPayment').value);
+    const monthlyRate = inferMonthlyRateFromPayment(debt, finalPayment, months);
+    annualRate = monthlyRate * 12;
+    document.getElementById('simRate').value = (annualRate * 100).toFixed(4);
+  }
+
+  if(debt <= 0 || annualRate < 0 || months <= 0 || finalPayment <= 0){
+    document.getElementById('simSummary').innerHTML = '<div class="callout warn">Please enter valid inputs for the simulation.</div>';
+    document.getElementById('simTableWrap').innerHTML = '';
+    return;
+  }
+
+  simState = {
+    debt,
+    annualRate,
+    months,
+    payment: finalPayment,
+    mode,
+    extras: Array(months).fill(0),
+    rows: []
+  };
+
+  recalculateSimulation();
+}
 
       simState = {
         debt,
@@ -1326,48 +1465,85 @@
     }
 
     function renderSimulationSummary(rows){
-      if(!rows || !rows.length){
-        document.getElementById('simSummary').innerHTML = '<div class="callout warn">No rows to display.</div>';
-        return;
-      }
+  if(!rows || !rows.length){
+    document.getElementById('simSummary').innerHTML = '<div class="callout warn">No rows to display.</div>';
+    return;
+  }
 
-      const firstPayment = rows[0].payment;
-      const lastPayment = rows[rows.length - 1].payment;
-      const totalExtra = rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
+  const baseRows = buildSimulationRows(
+    simState.debt,
+    simState.annualRate,
+    simState.months,
+    simState.payment,
+    simState.mode,
+    Array(simState.months).fill(0)
+  );
 
-      document.getElementById('simSummary').innerHTML = `
-        <div class="summary-row">
-          <div class="metric">
-            <div class="k">Mode</div>
-            <div class="v" style="font-size:18px;">${simState.mode === 'reducePayment' ? 'Reduce payment' : 'Reduce term'}</div>
-          </div>
-          <div class="metric">
-            <div class="k">Total interest</div>
-            <div class="v">${formatCurrency(rows.totalInterest)}</div>
-          </div>
-          <div class="metric">
-            <div class="k">Total extra amortization</div>
-            <div class="v">${formatCurrency(totalExtra)}</div>
-          </div>
-          <div class="metric">
-            <div class="k">Actual periods</div>
-            <div class="v">${rows.monthsActual}</div>
-            <small>${rows.monthsSaved > 0 ? rows.monthsSaved + ' periods saved' : 'No term reduction yet'}</small>
-          </div>
-        </div>
+  const totalExtra = rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
 
-        <div class="logic">
-          <strong>How the recalculation works</strong><br><br>
-          ${simState.mode === 'reducePayment'
-            ? `Whenever you enter additional amortization in a period, the next period starts with a lower balance and the payment is recalculated over the remaining original term.`
-            : `Whenever you enter additional amortization in a period, the next period starts with a lower balance but the payment stays the same. Because the payment remains fixed, the loan finishes earlier and the term shortens.`}
-          <br><br>
-          First scheduled payment: <strong>${formatCurrency(firstPayment)}</strong><br>
-          Last scheduled payment: <strong>${formatCurrency(lastPayment)}</strong>
-        </div>
-      `;
-    }
+  document.getElementById('simSummary').innerHTML = `
+    <div class="badge">Loan Summary</div>
 
+    <div class="summary-row">
+      <div class="metric">
+        <div class="k">Base total interest</div>
+        <div class="v">${formatCurrency(baseRows.totalInterest)}</div>
+        <small>Without additional amortization.</small>
+      </div>
+
+      <div class="metric">
+        <div class="k">Simulated total interest</div>
+        <div class="v">${formatCurrency(rows.totalInterest)}</div>
+        <small>With your extra amortization inputs.</small>
+      </div>
+
+      <div class="metric">
+        <div class="k">Interest saved</div>
+        <div class="v">${formatCurrency(baseRows.totalInterest - rows.totalInterest)}</div>
+        <small>Base case minus simulated case.</small>
+      </div>
+
+      <div class="metric">
+        <div class="k">Total extra amortization</div>
+        <div class="v">${formatCurrency(totalExtra)}</div>
+        <small>Total additional principal entered.</small>
+      </div>
+    </div>
+
+    <div class="summary-row">
+      <div class="metric">
+        <div class="k">Base periods</div>
+        <div class="v">${baseRows.monthsActual}</div>
+        <small>Original schedule.</small>
+      </div>
+
+      <div class="metric">
+        <div class="k">Simulated periods</div>
+        <div class="v">${rows.monthsActual}</div>
+        <small>Recalculated schedule.</small>
+      </div>
+
+      <div class="metric">
+        <div class="k">Periods saved</div>
+        <div class="v">${Math.max(0, baseRows.monthsActual - rows.monthsActual)}</div>
+        <small>Only meaningful in reduce term mode.</small>
+      </div>
+
+      <div class="metric">
+        <div class="k">Mode</div>
+        <div class="v" style="font-size:18px;">${simState.mode === 'reducePayment' ? 'Reduce payment' : 'Reduce term'}</div>
+        <small>${simState.mode === 'reducePayment' ? 'Keeps remaining term, recalculates payment.' : 'Keeps payment, shortens remaining term.'}</small>
+      </div>
+    </div>
+
+    <div class="logic">
+      <strong>How the calculation works</strong><br><br>
+      ${simState.mode === 'reducePayment'
+        ? `Whenever you enter additional amortization in a period, the next period starts with a lower balance and the payment is recalculated over the remaining original term.`
+        : `Whenever you enter additional amortization in a period, the next period starts with a lower balance but the payment stays the same. Because the payment remains fixed, the loan finishes earlier and the term shortens.`}
+    </div>
+  `;
+}
     function renderSimulationTable(rows){
       const rowsHtml = rows.map((row, idx) => `
         <tr>
@@ -1433,6 +1609,44 @@
       document.getElementById('simPayment').value = formatMoney(957.16);
       initializeSimulation();
     }
+
+    function downloadSchedulePDF(){
+  const content = document.getElementById('schedTableWrap').innerHTML;
+  openPrintWindow('Debt Schedule PDF', content);
+}
+
+function downloadSimulationPDF(){
+  const content = document.getElementById('simTableWrap').innerHTML;
+  openPrintWindow('Simulation Amortization PDF', content);
+}
+
+function openPrintWindow(title, content){
+  const w = window.open('', '_blank');
+  w.document.write(`
+    <html>
+    <head>
+      <title>${title}</title>
+      <style>
+        body{ font-family: Arial, sans-serif; padding:20px; }
+        table{ width:100%; border-collapse:collapse; font-size:12px; }
+        th,td{ border:1px solid #ccc; padding:6px; text-align:right; }
+        th:first-child, td:first-child{ text-align:center; }
+        h1{ font-size:20px; }
+      </style>
+    </head>
+    <body>
+      <h1>${title}</h1>
+      ${content}
+      <script>
+        window.onload = function(){
+          window.print();
+        }
+      <\/script>
+    </body>
+    </html>
+  `);
+  w.document.close();
+}
 
     setupMoneyInputs();
     loadDebtVsInvestExample();
