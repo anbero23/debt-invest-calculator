@@ -1,64 +1,221 @@
+<!DOCTYPE html>
+<html>
+
+<head>
+
+<title>Debt vs Invest Calculator</title>
+
+<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+
+<style>
+
+body{
+font-family:'Inter',sans-serif;
+margin:0;
+background:#f4f6fb;
+display:flex;
+}
+
+/* sidebar */
+
+.sidebar{
+width:220px;
+background:#1e2a38;
+color:white;
+height:100vh;
+padding:20px;
+}
+
+.sidebar h2{
+font-size:18px;
+margin-bottom:30px;
+}
+
+.sidebar a{
+display:block;
+color:white;
+text-decoration:none;
+margin:15px 0;
+opacity:0.8;
+}
+
+.sidebar a:hover{
+opacity:1;
+}
+
+/* main area */
+
+.main{
+flex:1;
+padding:40px;
+}
+
+.container{
+max-width:700px;
+background:white;
+padding:35px;
+border-radius:10px;
+box-shadow:0 10px 25px rgba(0,0,0,0.08);
+}
+
+h1{
+margin-top:0;
+}
+
+input{
+width:100%;
+padding:10px;
+margin-bottom:18px;
+border-radius:6px;
+border:1px solid #ccc;
+font-size:14px;
+}
+
+button{
+background:#2d6cdf;
+color:white;
+border:none;
+padding:12px 25px;
+border-radius:6px;
+font-size:15px;
+cursor:pointer;
+}
+
+button:hover{
+background:#1c54b2;
+}
+
+.result{
+margin-top:30px;
+background:#f0f4ff;
+padding:20px;
+border-radius:8px;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<div class="sidebar">
+
+<h2>Finance Tools</h2>
+
+<a href="#">Debt vs Invest</a>
+<a href="#">Amortization Calculator</a>
+<a href="#">Loan Payment Calculator</a>
+<a href="#">Cost of Living Tool</a>
+
+</div>
+
+<div class="main">
+
+<div class="container">
+
+<h1>Pay Debt or Invest?</h1>
+
+<p>Compare whether extra money should go toward debt payoff or investing.</p>
+
+<label>Debt Amount ($)</label>
+<input type="text" id="debt">
+
+<label>Interest Rate (%)</label>
+<input type="number" id="rate">
+
+<label>Years Remaining</label>
+<input type="number" id="years">
+
+<label>Extra Monthly Money ($)</label>
+<input type="text" id="extra">
+
+<label>Expected Investment Return (%)</label>
+<input type="number" id="return">
+
+<button onclick="calculate()">Compare</button>
+
+<div id="result" class="result"></div>
+
+</div>
+
+</div>
+
+<script>
+
+/* format numbers */
+
+function formatNumber(x){
+return x.toLocaleString("en-US",{maximumFractionDigits:2})
+}
+
+function cleanNumber(x){
+return parseFloat(x.replace(/,/g,''))
+}
+
+/* auto commas */
+
+document.querySelectorAll("#debt,#extra").forEach(input=>{
+input.addEventListener("input",function(){
+let value=this.value.replace(/,/g,'')
+if(!isNaN(value) && value!=""){
+this.value=parseFloat(value).toLocaleString("en-US")
+}
+})
+})
+
 function calculate(){
 
 let debt=cleanNumber(document.getElementById("debt").value)
 let rate=parseFloat(document.getElementById("rate").value)/100
+let years=parseFloat(document.getElementById("years").value)
 let extra=cleanNumber(document.getElementById("extra").value)
 let investReturn=parseFloat(document.getElementById("return").value)/100
 
-let unit=document.getElementById("timeUnit").value
-let period=parseFloat(document.getElementById("period").value)
+let months=years*12
 
-let months= unit=="years" ? period*12 : period
+/* interest saved if paying debt */
 
-/* investment */
+let interestSaved=debt*rate*years
 
-let monthlyReturn=investReturn/12
+/* investment growth */
+
 let investment=0
-let contribution=0
+let monthlyReturn=investReturn/12
 
 for(let i=0;i<months;i++){
 
 investment=investment*(1+monthlyReturn)+extra
-contribution+=extra
 
 }
 
-let investmentProfit=investment-contribution
-
-/* debt interest saved (approximation) */
-
-let monthlyRate=rate/12
-let interestSaved=debt*rate*(months/12)
-
-/* result */
-
 let message=""
 
-if(investmentProfit>interestSaved){
+if(investment>interestSaved){
 
-message=`<b>Investing may be better</b><br><br>
+message=`
+<b>Investing may be better.</b><br><br>
 
-Total invested: $${formatNumber(contribution)}<br>
-Final investment value: $${formatNumber(investment)}<br>
-Investment profit: <b>$${formatNumber(investmentProfit)}</b><br><br>
+If you invest $${formatNumber(extra)} monthly at ${investReturn*100}% return, 
+your investment could grow to approximately <b>$${formatNumber(investment)}</b>.
 
-Interest saved if paying debt: <b>$${formatNumber(interestSaved)}</b><br><br>
+If you instead use that money to pay debt faster, you might save about 
+<b>$${formatNumber(interestSaved)}</b> in interest.
 
-Because investment profit is larger than interest savings, investing may be the better financial choice.
+Because the investment gain is larger, investing may be the financially better option.
 `
 
 }else{
 
-message=`<b>Paying debt faster may be better</b><br><br>
+message=`
+<b>Paying debt may be better.</b><br><br>
 
-Interest saved by reducing debt: <b>$${formatNumber(interestSaved)}</b><br><br>
+Using the extra $${formatNumber(extra)} monthly to reduce your loan could save about 
+<b>$${formatNumber(interestSaved)}</b> in interest.
 
-If invested instead:<br>
-Total invested: $${formatNumber(contribution)}<br>
-Final value: $${formatNumber(investment)}<br>
-Investment profit: <b>$${formatNumber(investmentProfit)}</b><br><br>
+If invested at ${investReturn*100}%, your investment could grow to around 
+<b>$${formatNumber(investment)}</b>.
 
-Because interest savings exceed investment profit, paying debt faster may be the better financial option.
+Because the interest savings are higher, paying the debt faster may be the better choice.
 `
 
 }
@@ -66,3 +223,8 @@ Because interest savings exceed investment profit, paying debt faster may be the
 document.getElementById("result").innerHTML=message
 
 }
+
+</script>
+
+</body>
+</html>
