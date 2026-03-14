@@ -1,0 +1,111 @@
+<!DOCTYPE html>
+<html>
+<head>
+
+<title>Pay Debt or Invest Calculator</title>
+
+<style>
+
+body{
+font-family: Arial;
+max-width:700px;
+margin:auto;
+padding:40px;
+}
+
+input{
+display:block;
+margin-bottom:15px;
+padding:8px;
+width:100%;
+}
+
+button{
+padding:10px 20px;
+background:#2b7cff;
+color:white;
+border:none;
+}
+
+#result{
+margin-top:30px;
+font-size:20px;
+font-weight:bold;
+}
+
+</style>
+
+</head>
+
+<body>
+
+<h1>Pay Debt or Invest Calculator</h1>
+
+<p>Compare paying off debt vs investing extra money.</p>
+
+<label>Debt Amount ($)</label>
+<input type="number" id="debt">
+
+<label>Interest Rate (%)</label>
+<input type="number" id="rate">
+
+<label>Years Remaining</label>
+<input type="number" id="years">
+
+<label>Extra Monthly Money ($)</label>
+<input type="number" id="extra">
+
+<label>Expected Investment Return (%)</label>
+<input type="number" id="return">
+
+<button onclick="calculate()">Compare</button>
+
+<div id="result"></div>
+
+<script>
+
+function calculate(){
+
+let debt=parseFloat(document.getElementById("debt").value);
+let rate=parseFloat(document.getElementById("rate").value)/100/12;
+let years=parseFloat(document.getElementById("years").value);
+let extra=parseFloat(document.getElementById("extra").value);
+let investReturn=parseFloat(document.getElementById("return").value)/100/12;
+
+let months=years*12;
+
+let investment=0;
+let balance=debt;
+
+for(let i=0;i<months;i++){
+
+investment=investment*(1+investReturn)+extra;
+
+balance=balance*(1+rate)-(extra);
+
+if(balance<0){
+balance=0;
+}
+
+}
+
+let result="";
+
+if(investment>debt-balance){
+
+result="Investing may give a higher value: $" + investment.toFixed(0);
+
+}else{
+
+result="Paying debt faster may save more interest.";
+
+}
+
+document.getElementById("result").innerHTML=result;
+
+}
+
+</script>
+
+</body>
+</html>
