@@ -1,300 +1,1441 @@
 <!DOCTYPE html>
-<html>
-
+<html lang="en">
 <head>
+  <meta charset="UTF-8" />
+  <meta name="viewport" content="width=device-width, initial-scale=1.0" />
+  <title>Finance Tools</title>
+  <link rel="preconnect" href="https://fonts.googleapis.com">
+  <link rel="preconnect" href="https://fonts.gstatic.com" crossorigin>
+  <link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;500;600;700&display=swap" rel="stylesheet">
+  <script src="https://cdn.jsdelivr.net/npm/chart.js"></script>
 
-<title>Debt vs Invest Calculator</title>
+  <style>
+    :root{
+      --bg:#f8f3f5;
+      --card:#ffffff;
+      --sidebar:#5b1027;
+      --sidebar-hover:#7a1938;
+      --primary:#7b1737;
+      --primary-dark:#5a0f27;
+      --accent:#b04a6a;
+      --soft:#f4e7ec;
+      --soft-2:#f8edf1;
+      --text:#24161c;
+      --muted:#6b5560;
+      --border:#e7d6dd;
+      --success:#205c3b;
+      --warn:#7a4a00;
+      --shadow:0 14px 36px rgba(91,16,39,.10);
+    }
 
-<link href="https://fonts.googleapis.com/css2?family=Inter:wght@300;400;600&display=swap" rel="stylesheet">
+    * { box-sizing:border-box; }
 
-<style>
+    body{
+      margin:0;
+      font-family:'Inter',sans-serif;
+      background:var(--bg);
+      color:var(--text);
+      display:flex;
+      min-height:100vh;
+    }
 
-body{
-font-family:'Inter',sans-serif;
-margin:0;
-background:#f4f6fb;
-display:flex;
-}
+    .sidebar{
+      width:260px;
+      background:linear-gradient(180deg,var(--sidebar),var(--primary-dark));
+      color:#fff;
+      padding:24px 18px;
+      position:sticky;
+      top:0;
+      height:100vh;
+    }
 
-/* sidebar */
+    .brand{
+      font-size:22px;
+      font-weight:700;
+      margin-bottom:6px;
+    }
 
-.sidebar{
-width:220px;
-background:#6d0f2b;
-color:white;
-height:100vh;
-padding:20px;
-}
+    .brand-sub{
+      font-size:13px;
+      opacity:.75;
+      margin-bottom:28px;
+    }
 
-.sidebar h2{
-font-size:18px;
-margin-bottom:30px;
-}
+    .nav-title{
+      font-size:11px;
+      letter-spacing:.12em;
+      text-transform:uppercase;
+      opacity:.7;
+      margin:18px 10px 10px;
+    }
 
-.sidebar a{
-display:block;
-color:white;
-text-decoration:none;
-margin:15px 0;
-opacity:0.8;
-}
+    .nav-btn{
+      display:block;
+      width:100%;
+      border:none;
+      background:transparent;
+      color:#fff;
+      text-align:left;
+      padding:13px 14px;
+      border-radius:12px;
+      cursor:pointer;
+      font-size:15px;
+      margin-bottom:8px;
+      transition:.2s ease;
+    }
 
-.sidebar a:hover{
-opacity:1;
-}
+    .nav-btn:hover,
+    .nav-btn.active{
+      background:rgba(255,255,255,.10);
+    }
 
-/* main area */
+    .sidebar-note{
+      margin-top:24px;
+      padding:14px;
+      border:1px solid rgba(255,255,255,.14);
+      border-radius:14px;
+      font-size:13px;
+      line-height:1.45;
+      color:rgba(255,255,255,.88);
+      background:rgba(255,255,255,.05);
+    }
 
-.main{
-flex:1;
-padding:40px;
-}
+    .main{
+      flex:1;
+      padding:30px;
+    }
 
-.container{
-max-width:700px;
-background:white;
-padding:35px;
-border-radius:10px;
-box-shadow:0 10px 25px rgba(0,0,0,0.08);
-}
+    .page{
+      display:none;
+      max-width:1300px;
+      margin:0 auto;
+    }
 
-h1{
-margin-top:0;
-}
+    .page.active{
+      display:block;
+    }
 
-input{
-width:100%;
-padding:10px;
-margin-bottom:18px;
-border-radius:6px;
-border:1px solid #ccc;
-font-size:14px;
-}
+    .hero{
+      margin-bottom:22px;
+    }
 
-button{
-background:#8c1c3a;
-color:white;
-border:none;
-padding:12px 25px;
-border-radius:6px;
-font-size:15px;
-cursor:pointer;
-}
+    .hero h1{
+      margin:0 0 8px 0;
+      font-size:34px;
+      line-height:1.1;
+    }
 
-button:hover{
-background:#5e0d25;
-}
+    .hero p{
+      margin:0;
+      color:var(--muted);
+      font-size:15px;
+      line-height:1.5;
+    }
 
-.result{
-margin-top:30px;
-background:#f8e9ee;
-padding:20px;
-border-radius:8px;
-}
+    .grid{
+      display:grid;
+      grid-template-columns: 430px 1fr;
+      gap:22px;
+      align-items:start;
+    }
 
-</style>
+    .card{
+      background:var(--card);
+      border:1px solid var(--border);
+      border-radius:18px;
+      box-shadow:var(--shadow);
+      padding:22px;
+    }
 
+    .card h2{
+      margin:0 0 18px 0;
+      font-size:20px;
+    }
+
+    .section-title{
+      margin:0 0 14px 0;
+      font-size:18px;
+      font-weight:700;
+    }
+
+    .fields{
+      display:grid;
+      gap:14px;
+    }
+
+    .field label{
+      display:block;
+      font-size:13px;
+      font-weight:600;
+      margin-bottom:7px;
+      color:var(--text);
+    }
+
+    .help{
+      color:var(--muted);
+      font-size:12px;
+      margin-top:5px;
+      line-height:1.45;
+    }
+
+    input[type="text"],
+    input[type="number"],
+    select{
+      width:100%;
+      border:1px solid var(--border);
+      background:#fff;
+      color:var(--text);
+      padding:12px 14px;
+      border-radius:12px;
+      font-size:14px;
+      outline:none;
+      transition:border-color .15s ease, box-shadow .15s ease;
+    }
+
+    input:focus,
+    select:focus{
+      border-color:var(--accent);
+      box-shadow:0 0 0 4px rgba(176,74,106,.12);
+    }
+
+    .input-group{
+      display:flex;
+      align-items:center;
+      border:1px solid var(--border);
+      background:#fff;
+      border-radius:12px;
+      overflow:hidden;
+    }
+
+    .input-group input,
+    .input-group select{
+      border:none;
+      border-radius:0;
+      box-shadow:none !important;
+    }
+
+    .suffix,
+    .prefix{
+      padding:0 12px;
+      color:var(--muted);
+      font-weight:600;
+      white-space:nowrap;
+    }
+
+    .inline-2{
+      display:grid;
+      grid-template-columns:1fr 140px;
+      gap:12px;
+    }
+
+    .inline-3{
+      display:grid;
+      grid-template-columns:1fr 1fr 1fr;
+      gap:12px;
+    }
+
+    .btn{
+      border:none;
+      background:var(--primary);
+      color:#fff;
+      padding:13px 18px;
+      border-radius:12px;
+      font-weight:700;
+      cursor:pointer;
+      transition:.2s ease;
+      font-size:14px;
+    }
+
+    .btn:hover{
+      background:var(--primary-dark);
+      transform:translateY(-1px);
+    }
+
+    .btn-secondary{
+      background:#fff;
+      color:var(--primary);
+      border:1px solid var(--border);
+    }
+
+    .btn-secondary:hover{
+      background:var(--soft-2);
+    }
+
+    .toolbar{
+      display:flex;
+      gap:10px;
+      flex-wrap:wrap;
+      margin-top:6px;
+    }
+
+    .result-box{
+      background:linear-gradient(180deg,var(--soft-2),#fff);
+      border:1px solid var(--border);
+      border-radius:18px;
+      padding:22px;
+    }
+
+    .result-grid{
+      display:grid;
+      grid-template-columns: repeat(3, minmax(180px,1fr));
+      gap:14px;
+      margin-bottom:18px;
+    }
+
+    .metric{
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+    }
+
+    .metric .k{
+      color:var(--muted);
+      font-size:12px;
+      margin-bottom:8px;
+      font-weight:600;
+      text-transform:uppercase;
+      letter-spacing:.04em;
+    }
+
+    .metric .v{
+      font-size:24px;
+      font-weight:700;
+    }
+
+    .metric small{
+      display:block;
+      margin-top:6px;
+      color:var(--muted);
+      line-height:1.4;
+    }
+
+    .callout{
+      border-radius:14px;
+      padding:16px;
+      margin-top:14px;
+      line-height:1.6;
+      font-size:14px;
+    }
+
+    .callout.success{
+      background:#eef7f1;
+      border:1px solid #cfe7d7;
+      color:#234b33;
+    }
+
+    .callout.warn{
+      background:#fff6e9;
+      border:1px solid #f0dfbb;
+      color:#6e4b00;
+    }
+
+    .logic{
+      margin-top:16px;
+      background:#fff;
+      border:1px solid var(--border);
+      border-radius:14px;
+      padding:16px;
+      font-size:14px;
+      line-height:1.65;
+    }
+
+    .table-wrap{
+      overflow:auto;
+      border:1px solid var(--border);
+      border-radius:16px;
+      background:#fff;
+    }
+
+    table{
+      width:100%;
+      border-collapse:collapse;
+      min-width:900px;
+    }
+
+    th, td{
+      padding:11px 12px;
+      border-bottom:1px solid #f0e4e8;
+      text-align:right;
+      font-size:13px;
+      white-space:nowrap;
+    }
+
+    th:first-child, td:first-child{
+      text-align:center;
+    }
+
+    th{
+      position:sticky;
+      top:0;
+      background:#f9f1f4;
+      color:#4b2431;
+      font-weight:700;
+      z-index:2;
+    }
+
+    tr:hover td{
+      background:#fcf8fa;
+    }
+
+    .table-input{
+      width:110px !important;
+      min-width:110px;
+      padding:8px 9px !important;
+      border-radius:10px !important;
+      font-size:13px !important;
+      text-align:right;
+    }
+
+    .mini{
+      font-size:12px;
+      color:var(--muted);
+    }
+
+    .badge{
+      display:inline-block;
+      padding:6px 10px;
+      border-radius:999px;
+      background:var(--soft);
+      color:var(--primary);
+      font-size:12px;
+      font-weight:700;
+      margin-bottom:10px;
+    }
+
+    .summary-row{
+      display:grid;
+      grid-template-columns: repeat(4, minmax(140px,1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
+
+    .empty{
+      color:var(--muted);
+      font-size:14px;
+      padding:18px 2px 0;
+    }
+
+    .footer-note{
+      margin-top:16px;
+      font-size:12px;
+      color:var(--muted);
+      line-height:1.55;
+    }
+
+    canvas{
+      width:100% !important;
+      max-height:360px;
+    }
+
+    @media (max-width: 1100px){
+      .grid{
+        grid-template-columns:1fr;
+      }
+      .sidebar{
+        width:220px;
+      }
+      .result-grid,
+      .summary-row{
+        grid-template-columns:1fr;
+      }
+    }
+
+    @media (max-width: 860px){
+      body{
+        flex-direction:column;
+      }
+      .sidebar{
+        width:100%;
+        height:auto;
+        position:relative;
+      }
+      .main{
+        padding:18px;
+      }
+      .hero h1{
+        font-size:28px;
+      }
+      .inline-2,
+      .inline-3{
+        grid-template-columns:1fr;
+      }
+    }
+  </style>
 </head>
-
 <body>
-
-<div class="sidebar">
-
-<h2>Finance Tools</h2>
-
-<a onclick="showPage('calculator')">Debt vs Invest</a>
-
-<a onclick="showPage('schedule')">
-Check Debt Schedule
-</a>
-
-<a onclick="showPage('simulate')">
-Simulate Amortization
-</a>
-  
-</div>
-
-<div class="main">
-
-<div class="container">
-
-<h1>Pay Debt or Invest?</h1>
-
-<p>Compare whether extra money should go toward debt payoff or investing.</p>
-
-<label>Debt Amount ($)</label>
-<input type="text" id="debt" inputmode="decimal">
-
-<label>Interest Rate (%)</label>
-<div style="display:flex">
-
-<input type="number" id="rate">
-<span style="margin-left:6px">%</span>
-
-</div>
-
-<label>Years Remaining</label>
-<input type="number" id="years">
-
-<label>Extra Monthly Money ($)</label>
-<input type="text" id="extra">
-
-<label>Expected Investment Return (%)</label>
-<div style="display:flex">
-
-<input type="number" id="return">
-<span style="margin-left:6px">%</span>
-
-</div>
-
-<button onclick="calculate()">Compare</button>
-
-<div id="result" class="result"></div>
-
-</div>
-
-</div>
-
-<script>
-
-/* format numbers */
-
-function formatNumber(x){
-return x.toLocaleString("en-US",{maximumFractionDigits:2})
-}
-
-function cleanNumber(x){
-return parseFloat(x.replace(/,/g,''))
-}
-
-/* auto commas */
-
-document.querySelectorAll("#debt,#extra").forEach(input=>{
-input.addEventListener("input",function(){
-let value=this.value.replace(/,/g,'')
-if(!isNaN(value) && value!=""){
-this.value=parseFloat(value).toLocaleString("en-US")
-}
-})
-})
-
-function calculate(){
-
-let debt=cleanNumber(document.getElementById("debt").value)
-let rate=parseFloat(document.getElementById("rate").value)/100
-let extra=cleanNumber(document.getElementById("extra").value)
-let investReturn=parseFloat(document.getElementById("return").value)/100
-
-let unit=document.getElementById("timeUnit").value
-let period=parseFloat(document.getElementById("period").value)
-
-let months= unit=="years" ? period*12 : period
-
-/* investment */
-
-let monthlyReturn=investReturn/12
-let investment=0
-let contribution=0
-
-for(let i=0;i<months;i++){
-
-investment=investment*(1+monthlyReturn)+extra
-contribution+=extra
-
-}
-
-let investmentProfit=investment-contribution
-
-/* debt interest saved (approximation) */
-
-let monthlyRate=rate/12
-let interestSaved=debt*rate*(months/12)
-
-/* result */
-
-let message=""
-
-if(investmentProfit>interestSaved){
-
-message=`<b>Investing may be better</b><br><br>
-
-Total invested: $${formatNumber(contribution)}<br>
-Final investment value: $${formatNumber(investment)}<br>
-Investment profit: <b>$${formatNumber(investmentProfit)}</b><br><br>
-
-Interest saved if paying debt: <b>$${formatNumber(interestSaved)}</b><br><br>
-
-Because investment profit is larger than interest savings, investing may be the better financial choice.
-`
-
-}else{
-
-message=`<b>Paying debt faster may be better</b><br><br>
-
-Interest saved by reducing debt: <b>$${formatNumber(interestSaved)}</b><br><br>
-
-If invested instead:<br>
-Total invested: $${formatNumber(contribution)}<br>
-Final value: $${formatNumber(investment)}<br>
-Investment profit: <b>$${formatNumber(investmentProfit)}</b><br><br>
-
-Because interest savings exceed investment profit, paying debt faster may be the better financial option.
-`
-
-}
-
-document.getElementById("result").innerHTML=message
-
-}
-
-let message=""
-
-if(investment>interestSaved){
-
-message=`
-<b>Investing may be better.</b><br><br>
-
-If you invest $${formatNumber(extra)} monthly at ${investReturn*100}% return, 
-your investment could grow to approximately <b>$${formatNumber(investment)}</b>.
-
-If you instead use that money to pay debt faster, you might save about 
-<b>$${formatNumber(interestSaved)}</b> in interest.
-
-Because the investment gain is larger, investing may be the financially better option.
-`
-
-}else{
-
-message=`
-<b>Paying debt may be better.</b><br><br>
-
-Using the extra $${formatNumber(extra)} monthly to reduce your loan could save about 
-<b>$${formatNumber(interestSaved)}</b> in interest.
-
-If invested at ${investReturn*100}%, your investment could grow to around 
-<b>$${formatNumber(investment)}</b>.
-
-Because the interest savings are higher, paying the debt faster may be the better choice.
-`
-
-}
-
-document.getElementById("result").innerHTML=message
-
-}
-
-<label>Remaining Time</label>
-
-<input type="number" id="period">
-
-<select id="timeUnit">
-
-<option value="years">Years</option>
-<option value="months">Months</option>
-
-</select>
-  
-</script>
-
+  <aside class="sidebar">
+    <div class="brand">Burgundy Finance Tools</div>
+    <div class="brand-sub">Debt decisions, schedules, and amortization simulations</div>
+
+    <div class="nav-title">Tools</div>
+    <button class="nav-btn active" data-page-target="page-calculator" onclick="showPage('page-calculator', this)">Debt vs Invest</button>
+    <button class="nav-btn" data-page-target="page-schedule" onclick="showPage('page-schedule', this)">Check Debt Schedule</button>
+    <button class="nav-btn" data-page-target="page-simulate" onclick="showPage('page-simulate', this)">Simulate Amortization</button>
+
+    <div class="sidebar-note">
+      Use the left menu to switch between the calculator, the standard debt schedule, and an editable amortization simulator with extra principal by period.
+    </div>
+  </aside>
+
+  <main class="main">
+
+    <!-- PAGE 1 -->
+    <section id="page-calculator" class="page active">
+      <div class="hero">
+        <h1>Pay Debt or Invest?</h1>
+        <p>
+          Compare whether your extra monthly cash should go to debt payoff or investing.
+          This version uses the original loan payment, simulates accelerated payoff with extra principal,
+          and also shows what happens if you invest after the loan is paid off early.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Inputs</h2>
+
+          <div class="fields">
+            <div class="field">
+              <label>Debt Amount</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="calcDebt" class="money-input" value="73,847.50" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Debt Interest Rate</label>
+              <div class="input-group">
+                <input type="number" id="calcRate" step="0.01" value="8.20" />
+                <span class="suffix">%</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Remaining Loan Time</label>
+              <div class="inline-2">
+                <input type="number" id="calcTermValue" step="1" value="110" />
+                <select id="calcTermUnit">
+                  <option value="months" selected>Months</option>
+                  <option value="years">Years</option>
+                </select>
+              </div>
+              <div class="help">You can choose to enter the remaining loan time in months or years.</div>
+            </div>
+
+            <div class="field">
+              <label>Extra Monthly Money Available</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="calcExtra" class="money-input" value="1,500.00" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Expected Investment Return</label>
+              <div class="input-group">
+                <input type="number" id="calcInvestRate" step="0.01" value="4.50" />
+                <span class="suffix">%</span>
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <button class="btn" onclick="runDebtVsInvest()">Compare Strategies</button>
+              <button class="btn btn-secondary" onclick="loadDebtVsInvestExample()">Load Example</button>
+            </div>
+          </div>
+
+          <div class="footer-note">
+            Recommendation is based on the ending value over the same horizon:
+            <strong>investing extra while keeping the loan</strong> versus
+            <strong>paying the loan off early and then investing the freed-up cash</strong>.
+            The analysis also shows interest saved and net investment profit separately.
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Results</h2>
+          <div id="calcResult" class="empty">Run the comparison to see the detailed result.</div>
+          <div style="margin-top:18px;">
+            <canvas id="compareChart"></canvas>
+          </div>
+        </div>
+      </div>
+    </section>
+
+    <!-- PAGE 2 -->
+    <section id="page-schedule" class="page">
+      <div class="hero">
+        <h1>Check Debt Schedule</h1>
+        <p>
+          Generate a standard amortization table showing payment number, beginning balance,
+          principal, interest, payment, and ending balance.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Schedule Inputs</h2>
+
+          <div class="fields">
+            <div class="field">
+              <label>Debt Amount</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="schedDebt" class="money-input" value="73,847.50" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Interest Rate</label>
+              <div class="input-group">
+                <input type="number" id="schedRate" step="0.01" value="8.20" />
+                <span class="suffix">%</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Period</label>
+              <div class="inline-2">
+                <input type="number" id="schedTermValue" step="1" value="110" />
+                <select id="schedTermUnit">
+                  <option value="months" selected>Months</option>
+                  <option value="years">Years</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Monthly Payment (optional)</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="schedPayment" class="money-input" placeholder="Leave blank to calculate automatically" />
+              </div>
+              <div class="help">
+                If blank, the page calculates the monthly payment from amount, rate, and term.
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <button class="btn" onclick="runDebtSchedule()">Generate Schedule</button>
+              <button class="btn btn-secondary" onclick="loadScheduleExample()">Load Example</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Summary</h2>
+          <div id="schedSummary" class="empty">Generate a schedule to see the summary.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:22px;">
+        <h2>Amortization Table</h2>
+        <div id="schedTableWrap" class="empty">The schedule table will appear here.</div>
+      </div>
+    </section>
+
+    <!-- PAGE 3 -->
+    <section id="page-simulate" class="page">
+      <div class="hero">
+        <h1>Simulate Amortization</h1>
+        <p>
+          Build an editable month-by-month schedule. You can enter extra amortization on any period and choose whether the loan should recalculate by
+          <strong>reducing the payment</strong> or by <strong>reducing the term</strong>.
+        </p>
+      </div>
+
+      <div class="grid">
+        <div class="card">
+          <h2>Simulation Inputs</h2>
+
+          <div class="fields">
+            <div class="field">
+              <label>Amortization Mode</label>
+              <select id="simMode">
+                <option value="reducePayment">Amortize reducing payment</option>
+                <option value="reduceTerm">Amortize reducing term</option>
+              </select>
+              <div class="help">
+                Reduce payment: remaining term stays fixed and the payment is recalculated after extra amortization.
+                Reduce term: payment stays the same and the term shortens.
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Debt Amount</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="simDebt" class="money-input" value="73,847.50" />
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Interest Rate</label>
+              <div class="input-group">
+                <input type="number" id="simRate" step="0.01" value="8.20" />
+                <span class="suffix">%</span>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Period</label>
+              <div class="inline-2">
+                <input type="number" id="simMonths" step="1" value="110" />
+                <select disabled>
+                  <option selected>Months</option>
+                </select>
+              </div>
+            </div>
+
+            <div class="field">
+              <label>Monthly Payment</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="simPayment" class="money-input" value="957.16" />
+              </div>
+              <div class="help">
+                You can enter the contractual monthly payment directly. The simulator uses it as the base scheduled payment.
+              </div>
+            </div>
+
+            <div class="toolbar">
+              <button class="btn" onclick="initializeSimulation()">Build Simulation</button>
+              <button class="btn btn-secondary" onclick="loadSimulationExample()">Load Example</button>
+            </div>
+          </div>
+        </div>
+
+        <div class="card">
+          <h2>Simulation Summary</h2>
+          <div id="simSummary" class="empty">Build a simulation to see the recalculated summary.</div>
+        </div>
+      </div>
+
+      <div class="card" style="margin-top:22px;">
+        <h2>Editable Amortization Table</h2>
+        <div class="mini" style="margin-bottom:12px;">
+          Edit the <strong>Additional Amortization</strong> column and click <strong>Recalculate</strong>.
+        </div>
+        <div class="toolbar" style="margin-bottom:14px;">
+          <button class="btn" onclick="recalculateSimulation()">Recalculate</button>
+          <button class="btn btn-secondary" onclick="resetSimulationExtras()">Reset Extra Amortization</button>
+        </div>
+        <div id="simTableWrap" class="empty">The editable amortization table will appear here.</div>
+      </div>
+    </section>
+  </main>
+
+  <script>
+    let compareChartInstance = null;
+    let simState = {
+      debt: 0,
+      annualRate: 0,
+      months: 0,
+      payment: 0,
+      mode: 'reducePayment',
+      extras: [],
+      rows: []
+    };
+
+    function showPage(pageId, btn){
+      document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
+      document.getElementById(pageId).classList.add('active');
+
+      document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
+      if(btn) btn.classList.add('active');
+    }
+
+    function parseMoney(value){
+      if(value === null || value === undefined) return 0;
+      const cleaned = String(value).replace(/,/g,'').trim();
+      if(cleaned === '') return 0;
+      const num = parseFloat(cleaned);
+      return isNaN(num) ? 0 : num;
+    }
+
+    function formatMoney(value){
+      return Number(value || 0).toLocaleString('en-US',{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      });
+    }
+
+    function formatCurrency(value){
+      return '$' + formatMoney(value);
+    }
+
+    function formatPercent(value){
+      return Number(value || 0).toLocaleString('en-US',{
+        minimumFractionDigits:2,
+        maximumFractionDigits:2
+      }) + '%';
+    }
+
+    function termToMonths(termValue, unit){
+      const v = Number(termValue || 0);
+      return unit === 'years' ? Math.round(v * 12) : Math.round(v);
+    }
+
+    function paymentFromLoan(principal, annualRate, months){
+      if(principal <= 0 || months <= 0) return 0;
+      const r = annualRate / 12;
+      if(r === 0) return principal / months;
+      return principal * (r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+    }
+
+    function futureValueRecurring(monthlyContribution, annualReturn, months){
+      const r = annualReturn / 12;
+      let value = 0;
+      for(let i = 0; i < months; i++){
+        value = value * (1 + r) + monthlyContribution;
+      }
+      return value;
+    }
+
+    function setupMoneyInputs(){
+      document.querySelectorAll('.money-input').forEach(input => {
+        input.addEventListener('focus', () => {
+          input.value = input.value.replace(/,/g,'');
+        });
+
+        input.addEventListener('blur', () => {
+          const num = parseMoney(input.value);
+          input.value = input.value.trim() === '' ? '' : formatMoney(num);
+        });
+      });
+    }
+
+    function sanitizePayment(payment, interest, balance){
+      let actualPayment = payment;
+      if(actualPayment < interest){
+        actualPayment = interest;
+      }
+      if(actualPayment > balance + interest){
+        actualPayment = balance + interest;
+      }
+      return actualPayment;
+    }
+
+    function generateStandardSchedule(principal, annualRate, months, payment){
+      const r = annualRate / 12;
+      const rows = [];
+      let balance = principal;
+      let totalInterest = 0;
+      let month = 0;
+
+      while(balance > 0.000001 && month < 2000){
+        month++;
+        const beginningBalance = balance;
+        const interest = beginningBalance * r;
+        let actualPayment = sanitizePayment(payment, interest, beginningBalance);
+        const principalPaid = actualPayment - interest;
+        let endingBalance = beginningBalance - principalPaid;
+
+        if(endingBalance < 0.000001) endingBalance = 0;
+
+        totalInterest += interest;
+
+        rows.push({
+          paymentNumber: month,
+          beginningBalance,
+          principalPaid,
+          interest,
+          payment: actualPayment,
+          endingBalance
+        });
+
+        balance = endingBalance;
+      }
+
+      return {
+        rows,
+        totalInterest,
+        totalPayments: rows.reduce((sum, row) => sum + row.payment, 0),
+        monthsActual: rows.length
+      };
+    }
+
+    function generateAcceleratedSchedule(principal, annualRate, originalPayment, extraMonthly){
+      const r = annualRate / 12;
+      const rows = [];
+      let balance = principal;
+      let totalInterest = 0;
+      let month = 0;
+
+      while(balance > 0.000001 && month < 2000){
+        month++;
+        const beginningBalance = balance;
+        const interest = beginningBalance * r;
+
+        let scheduledPayment = sanitizePayment(originalPayment, interest, beginningBalance);
+        let scheduledPrincipal = scheduledPayment - interest;
+
+        let extra = extraMonthly;
+        if(scheduledPrincipal + extra > beginningBalance){
+          extra = Math.max(0, beginningBalance - scheduledPrincipal);
+        }
+
+        let totalPrincipalPaid = scheduledPrincipal + extra;
+        let endingBalance = beginningBalance - totalPrincipalPaid;
+        let actualPayment = scheduledPayment + extra;
+
+        if(endingBalance < 0.000001) endingBalance = 0;
+
+        totalInterest += interest;
+
+        rows.push({
+          paymentNumber: month,
+          beginningBalance,
+          principalPaid: scheduledPrincipal,
+          extraPrincipal: extra,
+          totalPrincipalPaid,
+          interest,
+          payment: actualPayment,
+          endingBalance
+        });
+
+        balance = endingBalance;
+      }
+
+      return {
+        rows,
+        totalInterest,
+        totalPayments: rows.reduce((sum, row) => sum + row.payment, 0),
+        monthsActual: rows.length
+      };
+    }
+
+    function buildChart(labels, investSeries, accelerateSeries){
+      const ctx = document.getElementById('compareChart').getContext('2d');
+
+      if(compareChartInstance){
+        compareChartInstance.destroy();
+      }
+
+      compareChartInstance = new Chart(ctx, {
+        type: 'line',
+        data: {
+          labels,
+          datasets: [
+            {
+              label: 'Invest extra while keeping original loan',
+              data: investSeries,
+              borderColor: '#7b1737',
+              backgroundColor: 'rgba(123,23,55,.08)',
+              tension: 0.25,
+              fill: false,
+              borderWidth: 3,
+              pointRadius: 0
+            },
+            {
+              label: 'Pay debt early, then invest freed-up payment',
+              data: accelerateSeries,
+              borderColor: '#c06b88',
+              backgroundColor: 'rgba(192,107,136,.10)',
+              tension: 0.25,
+              fill: false,
+              borderWidth: 3,
+              pointRadius: 0
+            }
+          ]
+        },
+        options: {
+          responsive:true,
+          maintainAspectRatio:false,
+          plugins:{
+            legend:{
+              labels:{
+                boxWidth:12,
+                usePointStyle:true
+              }
+            }
+          },
+          scales:{
+            y:{
+              ticks:{
+                callback:(value)=>'$' + Number(value).toLocaleString('en-US')
+              }
+            }
+          }
+        }
+      });
+    }
+
+    function runDebtVsInvest(){
+      const debt = parseMoney(document.getElementById('calcDebt').value);
+      const annualRate = parseFloat(document.getElementById('calcRate').value || 0) / 100;
+      const termMonths = termToMonths(
+        document.getElementById('calcTermValue').value,
+        document.getElementById('calcTermUnit').value
+      );
+      const extra = parseMoney(document.getElementById('calcExtra').value);
+      const investAnnualRate = parseFloat(document.getElementById('calcInvestRate').value || 0) / 100;
+
+      if(debt <= 0 || annualRate < 0 || termMonths <= 0 || extra < 0 || investAnnualRate < 0){
+        document.getElementById('calcResult').innerHTML = '<div class="callout warn">Please enter valid values in all fields.</div>';
+        return;
+      }
+
+      const originalPayment = paymentFromLoan(debt, annualRate, termMonths);
+      const baseline = generateStandardSchedule(debt, annualRate, termMonths, originalPayment);
+      const accelerated = generateAcceleratedSchedule(debt, annualRate, originalPayment, extra);
+
+      const totalContributedToInvestment = extra * termMonths;
+      const endInvestmentIfInvestExtra = futureValueRecurring(extra, investAnnualRate, termMonths);
+      const netInvestmentProfit = endInvestmentIfInvestExtra - totalContributedToInvestment;
+
+      const interestSaved = baseline.totalInterest - accelerated.totalInterest;
+      const monthsSaved = baseline.monthsActual - accelerated.monthsActual;
+
+      const remainingMonthsAfterPayoff = termMonths - accelerated.monthsActual;
+      const freedMonthlyCashAfterPayoff = originalPayment + extra;
+      const endInvestmentAfterEarlyPayoff = remainingMonthsAfterPayoff > 0
+        ? futureValueRecurring(freedMonthlyCashAfterPayoff, investAnnualRate, remainingMonthsAfterPayoff)
+        : 0;
+
+      const recommendation = endInvestmentAfterEarlyPayoff > endInvestmentIfInvestExtra
+        ? 'amortize'
+        : 'invest';
+
+      const labels = [];
+      const investSeries = [];
+      const accelerateSeries = [];
+      let investAccountA = 0;
+      let investAccountB = 0;
+      const investMonthlyRate = investAnnualRate / 12;
+
+      for(let m = 1; m <= termMonths; m++){
+        labels.push('M' + m);
+
+        investAccountA = investAccountA * (1 + investMonthlyRate) + extra;
+        investSeries.push(Number(investAccountA.toFixed(2)));
+
+        if(m > accelerated.monthsActual){
+          investAccountB = investAccountB * (1 + investMonthlyRate) + freedMonthlyCashAfterPayoff;
+        } else {
+          investAccountB = investAccountB * (1 + investMonthlyRate);
+        }
+        accelerateSeries.push(Number(investAccountB.toFixed(2)));
+      }
+
+      let recommendationHtml = '';
+      if(recommendation === 'amortize'){
+        recommendationHtml = `
+          <div class="callout success">
+            <strong>Recommended strategy: amortize the debt first.</strong><br>
+            Over the same ${termMonths}-month horizon, paying the loan off early and then investing the freed-up cash
+            ends at <strong>${formatCurrency(endInvestmentAfterEarlyPayoff)}</strong>, versus
+            <strong>${formatCurrency(endInvestmentIfInvestExtra)}</strong> if you invest the extra money while keeping the original loan.
+          </div>
+        `;
+      } else {
+        recommendationHtml = `
+          <div class="callout success">
+            <strong>Recommended strategy: invest the extra money.</strong><br>
+            Over the same ${termMonths}-month horizon, investing the extra cash ends at
+            <strong>${formatCurrency(endInvestmentIfInvestExtra)}</strong>, versus
+            <strong>${formatCurrency(endInvestmentAfterEarlyPayoff)}</strong> if you pay the debt early and only invest after payoff.
+          </div>
+        `;
+      }
+
+      document.getElementById('calcResult').innerHTML = `
+        <div class="result-box">
+          <div class="badge">Detailed Comparison</div>
+
+          <div class="result-grid">
+            <div class="metric">
+              <div class="k">Original payment</div>
+              <div class="v">${formatCurrency(originalPayment)}</div>
+              <small>Calculated from debt amount, debt rate, and remaining term.</small>
+            </div>
+
+            <div class="metric">
+              <div class="k">Interest saved by amortizing</div>
+              <div class="v">${formatCurrency(interestSaved)}</div>
+              <small>Difference between original total interest and accelerated total interest.</small>
+            </div>
+
+            <div class="metric">
+              <div class="k">Investment profit</div>
+              <div class="v">${formatCurrency(netInvestmentProfit)}</div>
+              <small>Final investment value minus the total amount you contributed.</small>
+            </div>
+          </div>
+
+          <div class="result-grid">
+            <div class="metric">
+              <div class="k">If you invest extra monthly</div>
+              <div class="v">${formatCurrency(endInvestmentIfInvestExtra)}</div>
+              <small>Total invested: ${formatCurrency(totalContributedToInvestment)}<br>Net gain: ${formatCurrency(netInvestmentProfit)}</small>
+            </div>
+
+            <div class="metric">
+              <div class="k">If you amortize first, then invest</div>
+              <div class="v">${formatCurrency(endInvestmentAfterEarlyPayoff)}</div>
+              <small>Loan finishes in ${accelerated.monthsActual} months, which is ${monthsSaved} months earlier.</small>
+            </div>
+
+            <div class="metric">
+              <div class="k">Accelerated payoff date</div>
+              <div class="v">${accelerated.monthsActual} months</div>
+              <small>After that, the original payment plus extra cash can be invested.</small>
+            </div>
+          </div>
+
+          ${recommendationHtml}
+
+          <div class="logic">
+            <strong>Logic behind the result</strong><br><br>
+
+            1. The page first calculates your original contractual monthly payment:
+            <strong>${formatCurrency(originalPayment)}</strong>.<br><br>
+
+            2. It then simulates two paths over the exact same horizon of <strong>${termMonths} months</strong>:<br>
+            &nbsp;&nbsp;• <strong>Invest strategy</strong>: keep paying the original loan and invest ${formatCurrency(extra)} every month.<br>
+            &nbsp;&nbsp;• <strong>Amortize strategy</strong>: pay the original monthly payment plus ${formatCurrency(extra)} toward principal until the debt reaches zero; then invest the freed-up monthly cash for the remaining months.<br><br>
+
+            3. It also separately shows:<br>
+            &nbsp;&nbsp;• <strong>Interest saved by amortizing</strong>: ${formatCurrency(interestSaved)}<br>
+            &nbsp;&nbsp;• <strong>Net investment gain</strong>: ${formatCurrency(netInvestmentProfit)}<br><br>
+
+            4. In your example, comparing only <em>final investment value</em> (${formatCurrency(endInvestmentIfInvestExtra)}) to interest saved would be misleading, because
+            most of that amount is simply your own contributed money. The more meaningful figures are the <strong>net investment gain</strong>, the <strong>interest saved</strong>,
+            and the <strong>ending value over the same horizon</strong> after allowing early payoff to free cash for later investing.
+          </div>
+        </div>
+      `;
+
+      buildChart(labels, investSeries, accelerateSeries);
+    }
+
+    function loadDebtVsInvestExample(){
+      document.getElementById('calcDebt').value = formatMoney(73847.50);
+      document.getElementById('calcRate').value = '8.20';
+      document.getElementById('calcTermValue').value = '110';
+      document.getElementById('calcTermUnit').value = 'months';
+      document.getElementById('calcExtra').value = formatMoney(1500);
+      document.getElementById('calcInvestRate').value = '4.50';
+      runDebtVsInvest();
+    }
+
+    function runDebtSchedule(){
+      const debt = parseMoney(document.getElementById('schedDebt').value);
+      const annualRate = parseFloat(document.getElementById('schedRate').value || 0) / 100;
+      const months = termToMonths(
+        document.getElementById('schedTermValue').value,
+        document.getElementById('schedTermUnit').value
+      );
+      let payment = parseMoney(document.getElementById('schedPayment').value);
+
+      if(payment <= 0){
+        payment = paymentFromLoan(debt, annualRate, months);
+      }
+
+      if(debt <= 0 || annualRate < 0 || months <= 0 || payment <= 0){
+        document.getElementById('schedSummary').innerHTML = '<div class="callout warn">Please enter valid inputs.</div>';
+        document.getElementById('schedTableWrap').innerHTML = '';
+        return;
+      }
+
+      const schedule = generateStandardSchedule(debt, annualRate, months, payment);
+
+      document.getElementById('schedSummary').innerHTML = `
+        <div class="summary-row">
+          <div class="metric">
+            <div class="k">Monthly payment</div>
+            <div class="v">${formatCurrency(payment)}</div>
+          </div>
+          <div class="metric">
+            <div class="k">Total interest</div>
+            <div class="v">${formatCurrency(schedule.totalInterest)}</div>
+          </div>
+          <div class="metric">
+            <div class="k">Total paid</div>
+            <div class="v">${formatCurrency(schedule.totalPayments)}</div>
+          </div>
+          <div class="metric">
+            <div class="k">Periods</div>
+            <div class="v">${schedule.monthsActual}</div>
+          </div>
+        </div>
+      `;
+
+      const rowsHtml = schedule.rows.map(row => `
+        <tr>
+          <td>${row.paymentNumber}</td>
+          <td>${formatCurrency(row.beginningBalance)}</td>
+          <td>${formatCurrency(row.principalPaid)}</td>
+          <td>${formatCurrency(row.interest)}</td>
+          <td>${formatCurrency(row.payment)}</td>
+          <td>${formatCurrency(row.endingBalance)}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('schedTableWrap').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Payment #</th>
+                <th>Beginning Balance</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Payment</th>
+                <th>Ending Balance</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function loadScheduleExample(){
+      document.getElementById('schedDebt').value = formatMoney(73847.50);
+      document.getElementById('schedRate').value = '8.20';
+      document.getElementById('schedTermValue').value = '110';
+      document.getElementById('schedTermUnit').value = 'months';
+      document.getElementById('schedPayment').value = '';
+      runDebtSchedule();
+    }
+
+    function initializeSimulation(){
+      const debt = parseMoney(document.getElementById('simDebt').value);
+      const annualRate = parseFloat(document.getElementById('simRate').value || 0) / 100;
+      const months = Math.round(parseFloat(document.getElementById('simMonths').value || 0));
+      const payment = parseMoney(document.getElementById('simPayment').value);
+      const mode = document.getElementById('simMode').value;
+
+      if(debt <= 0 || annualRate < 0 || months <= 0 || payment <= 0){
+        document.getElementById('simSummary').innerHTML = '<div class="callout warn">Please enter valid inputs for the simulation.</div>';
+        document.getElementById('simTableWrap').innerHTML = '';
+        return;
+      }
+
+      simState = {
+        debt,
+        annualRate,
+        months,
+        payment,
+        mode,
+        extras: Array(months).fill(0),
+        rows: []
+      };
+
+      recalculateSimulation();
+    }
+
+    function getExtraValue(index){
+      const input = document.getElementById('extra_' + index);
+      return input ? parseMoney(input.value) : 0;
+    }
+
+    function recalculateSimulation(){
+      if(!simState.months){
+        document.getElementById('simSummary').innerHTML = '<div class="callout warn">Build the simulation first.</div>';
+        return;
+      }
+
+      simState.mode = document.getElementById('simMode').value;
+
+      for(let i = 0; i < simState.extras.length; i++){
+        simState.extras[i] = getExtraValue(i);
+      }
+
+      const rows = buildSimulationRows(
+        simState.debt,
+        simState.annualRate,
+        simState.months,
+        simState.payment,
+        simState.mode,
+        simState.extras
+      );
+
+      simState.rows = rows;
+
+      renderSimulationSummary(rows);
+      renderSimulationTable(rows);
+      setupMoneyInputs();
+    }
+
+    function buildSimulationRows(principal, annualRate, originalMonths, originalPayment, mode, extras){
+      const r = annualRate / 12;
+      let balance = principal;
+      let rows = [];
+      let totalInterest = 0;
+      let currentPayment = originalPayment;
+      let month = 0;
+
+      while(balance > 0.000001 && month < 2000){
+        month++;
+        const beginningBalance = balance;
+        const interest = beginningBalance * r;
+        const remainingMonthsIncludingCurrent = Math.max(1, originalMonths - month + 1);
+
+        if(mode === 'reducePayment'){
+          currentPayment = paymentFromLoan(beginningBalance, annualRate, remainingMonthsIncludingCurrent);
+        } else {
+          currentPayment = originalPayment;
+        }
+
+        let scheduledPayment = sanitizePayment(currentPayment, interest, beginningBalance);
+        let principalFromScheduledPayment = scheduledPayment - interest;
+
+        let extraPrincipal = extras[month - 1] || 0;
+        if(principalFromScheduledPayment + extraPrincipal > beginningBalance){
+          extraPrincipal = Math.max(0, beginningBalance - principalFromScheduledPayment);
+        }
+
+        let totalPrincipal = principalFromScheduledPayment + extraPrincipal;
+        let endingBalance = beginningBalance - totalPrincipal;
+        let totalCashOut = scheduledPayment + extraPrincipal;
+
+        if(endingBalance < 0.000001) endingBalance = 0;
+
+        rows.push({
+          paymentNumber: month,
+          beginningBalance,
+          principalPaid: principalFromScheduledPayment,
+          interest,
+          payment: scheduledPayment,
+          extraPrincipal,
+          endingBalance
+        });
+
+        totalInterest += interest;
+        balance = endingBalance;
+
+        if(mode === 'reducePayment' && balance > 0 && month < originalMonths){
+          const remainingAfterCurrent = originalMonths - month;
+          if(remainingAfterCurrent > 0){
+            currentPayment = paymentFromLoan(balance, annualRate, remainingAfterCurrent);
+          }
+        }
+      }
+
+      rows.totalInterest = totalInterest;
+      rows.totalPaid = rows.reduce((sum, row) => sum + row.payment + row.extraPrincipal, 0);
+      rows.monthsActual = rows.length;
+      rows.originalMonths = originalMonths;
+      rows.monthsSaved = Math.max(0, originalMonths - rows.length);
+
+      return rows;
+    }
+
+    function renderSimulationSummary(rows){
+      if(!rows || !rows.length){
+        document.getElementById('simSummary').innerHTML = '<div class="callout warn">No rows to display.</div>';
+        return;
+      }
+
+      const firstPayment = rows[0].payment;
+      const lastPayment = rows[rows.length - 1].payment;
+      const totalExtra = rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
+
+      document.getElementById('simSummary').innerHTML = `
+        <div class="summary-row">
+          <div class="metric">
+            <div class="k">Mode</div>
+            <div class="v" style="font-size:18px;">${simState.mode === 'reducePayment' ? 'Reduce payment' : 'Reduce term'}</div>
+          </div>
+          <div class="metric">
+            <div class="k">Total interest</div>
+            <div class="v">${formatCurrency(rows.totalInterest)}</div>
+          </div>
+          <div class="metric">
+            <div class="k">Total extra amortization</div>
+            <div class="v">${formatCurrency(totalExtra)}</div>
+          </div>
+          <div class="metric">
+            <div class="k">Actual periods</div>
+            <div class="v">${rows.monthsActual}</div>
+            <small>${rows.monthsSaved > 0 ? rows.monthsSaved + ' periods saved' : 'No term reduction yet'}</small>
+          </div>
+        </div>
+
+        <div class="logic">
+          <strong>How the recalculation works</strong><br><br>
+          ${simState.mode === 'reducePayment'
+            ? `Whenever you enter additional amortization in a period, the next period starts with a lower balance and the payment is recalculated over the remaining original term.`
+            : `Whenever you enter additional amortization in a period, the next period starts with a lower balance but the payment stays the same. Because the payment remains fixed, the loan finishes earlier and the term shortens.`}
+          <br><br>
+          First scheduled payment: <strong>${formatCurrency(firstPayment)}</strong><br>
+          Last scheduled payment: <strong>${formatCurrency(lastPayment)}</strong>
+        </div>
+      `;
+    }
+
+    function renderSimulationTable(rows){
+      const rowsHtml = rows.map((row, idx) => `
+        <tr>
+          <td>${row.paymentNumber}</td>
+          <td>${formatCurrency(row.beginningBalance)}</td>
+          <td>${formatCurrency(row.principalPaid)}</td>
+          <td>${formatCurrency(row.interest)}</td>
+          <td>${formatCurrency(row.payment)}</td>
+          <td>
+            <div class="input-group" style="max-width:140px; margin:0 auto;">
+              <span class="prefix">$</span>
+              <input
+                type="text"
+                id="extra_${idx}"
+                class="money-input table-input"
+                value="${row.extraPrincipal ? formatMoney(row.extraPrincipal) : ''}"
+                onblur="syncExtraToState(${idx})"
+              />
+            </div>
+          </td>
+          <td>${formatCurrency(row.endingBalance)}</td>
+        </tr>
+      `).join('');
+
+      document.getElementById('simTableWrap').innerHTML = `
+        <div class="table-wrap">
+          <table>
+            <thead>
+              <tr>
+                <th>Payment #</th>
+                <th>Beginning Balance</th>
+                <th>Principal</th>
+                <th>Interest</th>
+                <th>Payment</th>
+                <th>Additional Amortization</th>
+                <th>Ending Balance</th>
+              </tr>
+            </thead>
+            <tbody>${rowsHtml}</tbody>
+          </table>
+        </div>
+      `;
+    }
+
+    function syncExtraToState(index){
+      const input = document.getElementById('extra_' + index);
+      if(!input) return;
+      simState.extras[index] = parseMoney(input.value);
+      input.value = input.value.trim() === '' ? '' : formatMoney(simState.extras[index]);
+    }
+
+    function resetSimulationExtras(){
+      if(!simState.months) return;
+      simState.extras = Array(simState.months).fill(0);
+      recalculateSimulation();
+    }
+
+    function loadSimulationExample(){
+      document.getElementById('simMode').value = 'reduceTerm';
+      document.getElementById('simDebt').value = formatMoney(73847.50);
+      document.getElementById('simRate').value = '8.20';
+      document.getElementById('simMonths').value = '110';
+      document.getElementById('simPayment').value = formatMoney(957.16);
+      initializeSimulation();
+    }
+
+    setupMoneyInputs();
+    loadDebtVsInvestExample();
+  </script>
 </body>
 </html>
