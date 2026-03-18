@@ -11,22 +11,22 @@
 
   <style>
     :root{
-  --bg:#f8f3f5;
-  --card:#ffffff;
-  --sidebar:#6C1D45;
-  --sidebar-hover:#7F2952;
-  --primary:#7A1F4B;
-  --primary-dark:#5A1637;
-  --accent:#B55A7A;
-  --soft:#F4E7EC;
-  --soft-2:#FAF1F5;
-  --text:#24161c;
-  --muted:#6b5560;
-  --border:#E9D8E1;
-  --success:#205c3b;
-  --warn:#7a4a00;
-  --shadow:0 14px 36px rgba(108,29,69,.10);
-  }
+      --bg:#f8f3f5;
+      --card:#ffffff;
+      --sidebar:#6C1D45;
+      --sidebar-hover:#7F2952;
+      --primary:#7A1F4B;
+      --primary-dark:#5A1637;
+      --accent:#B55A7A;
+      --soft:#F4E7EC;
+      --soft-2:#FAF1F5;
+      --text:#24161c;
+      --muted:#6b5560;
+      --border:#E9D8E1;
+      --success:#205c3b;
+      --warn:#7a4a00;
+      --shadow:0 14px 36px rgba(108,29,69,.10);
+    }
 
     * { box-sizing:border-box; }
 
@@ -152,12 +152,6 @@
       font-size:20px;
     }
 
-    .section-title{
-      margin:0 0 14px 0;
-      font-size:18px;
-      font-weight:700;
-    }
-
     .fields{
       display:grid;
       gap:14px;
@@ -228,12 +222,6 @@
       gap:12px;
     }
 
-    .inline-3{
-      display:grid;
-      grid-template-columns:1fr 1fr 1fr;
-      gap:12px;
-    }
-
     .btn{
       border:none;
       background:var(--primary);
@@ -287,6 +275,7 @@
       border:1px solid var(--border);
       border-radius:14px;
       padding:16px;
+      min-width:0;
     }
 
     .metric .k{
@@ -299,8 +288,10 @@
     }
 
     .metric .v{
-      font-size:24px;
+      font-size:clamp(18px, 2vw, 24px);
       font-weight:700;
+      line-height:1.15;
+      overflow-wrap:anywhere;
     }
 
     .metric small{
@@ -404,22 +395,11 @@
     }
 
     .summary-row{
-  display:grid;
-  grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
-  gap:12px;
-  margin-bottom:18px;
-}
-
-.metric .v{
-  font-size:clamp(18px, 2vw, 24px);
-  font-weight:700;
-  line-height:1.15;
-  overflow-wrap:anywhere;
-}
-
-.metric{
-  min-width:0;
-}
+      display:grid;
+      grid-template-columns: repeat(auto-fit, minmax(180px, 1fr));
+      gap:12px;
+      margin-bottom:18px;
+    }
 
     .empty{
       color:var(--muted);
@@ -467,8 +447,7 @@
       .hero h1{
         font-size:28px;
       }
-      .inline-2,
-      .inline-3{
+      .inline-2{
         grid-template-columns:1fr;
       }
     }
@@ -480,9 +459,9 @@
     <div class="brand-sub">Debt decisions, schedules, and amortization simulations</div>
 
     <div class="nav-title">Tools</div>
-    <button class="nav-btn active" data-page-target="page-calculator" onclick="showPage('page-calculator', this)">Debt vs Invest</button>
-    <button class="nav-btn" data-page-target="page-schedule" onclick="showPage('page-schedule', this)">Check Debt Schedule</button>
-    <button class="nav-btn" data-page-target="page-simulate" onclick="showPage('page-simulate', this)">Simulate Amortization</button>
+    <button class="nav-btn active" onclick="showPage('page-calculator', this)">Debt vs Invest</button>
+    <button class="nav-btn" onclick="showPage('page-schedule', this)">Check Debt Schedule</button>
+    <button class="nav-btn" onclick="showPage('page-simulate', this)">Simulate Amortization</button>
 
     <div class="sidebar-note">
       Use the left menu to switch between the calculator, the standard debt schedule, and an editable amortization simulator with extra principal by period.
@@ -490,8 +469,6 @@
   </aside>
 
   <main class="main">
-
-    <!-- PAGE 1 -->
     <section id="page-calculator" class="page active">
       <div class="hero">
         <h1>Pay Debt or Invest?</h1>
@@ -575,7 +552,6 @@
       </div>
     </section>
 
-    <!-- PAGE 2 -->
     <section id="page-schedule" class="page">
       <div class="hero">
         <h1>Check Debt Schedule</h1>
@@ -649,7 +625,6 @@
       </div>
     </section>
 
-    <!-- PAGE 3 -->
     <section id="page-simulate" class="page">
       <div class="hero">
         <h1>Simulate Amortization</h1>
@@ -665,64 +640,64 @@
 
           <div class="fields">
             <div class="field">
-  <label>Amortization Mode</label>
-  <select id="simMode">
-    <option value="reducePayment">Amortize reducing payment</option>
-    <option value="reduceTerm">Amortize reducing term</option>
-  </select>
-</div>
+              <label>Amortization Mode</label>
+              <select id="simMode">
+                <option value="reducePayment">Amortize reducing payment</option>
+                <option value="reduceTerm">Amortize reducing term</option>
+              </select>
+            </div>
 
-<div class="field">
-  <label>Known Input Type</label>
-  <select id="simKnownType" onchange="toggleSimKnownType()">
-    <option value="rate" selected>I know the rate</option>
-    <option value="payment">I know the monthly payment</option>
-  </select>
-  <div class="help">
-    Use rate if you know the nominal loan rate. Use payment if your real installment includes other items and you want the schedule to fit the actual payment.
-  </div>
-</div>
+            <div class="field">
+              <label>Known Input Type</label>
+              <select id="simKnownType" onchange="toggleSimKnownType()">
+                <option value="rate" selected>I know the rate</option>
+                <option value="payment">I know the monthly payment</option>
+              </select>
+              <div class="help">
+                Use rate if you know the nominal loan rate. Use payment if your real installment includes other items and you want the schedule to fit the actual payment.
+              </div>
+            </div>
 
-<div class="field">
-  <label>Debt Amount</label>
-  <div class="input-group">
-    <span class="prefix">$</span>
-    <input type="text" id="simDebt" class="money-input" value="73,847.50" />
-  </div>
-</div>
+            <div class="field">
+              <label>Debt Amount</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="simDebt" class="money-input" value="73,847.50" />
+              </div>
+            </div>
 
-<div class="field">
-  <label>Period</label>
-  <div class="inline-2">
-    <input type="number" id="simMonths" step="1" value="110" />
-    <select disabled>
-      <option selected>Months</option>
-    </select>
-  </div>
-</div>
+            <div class="field">
+              <label>Period</label>
+              <div class="inline-2">
+                <input type="number" id="simMonths" step="1" value="110" />
+                <select disabled>
+                  <option selected>Months</option>
+                </select>
+              </div>
+            </div>
 
-<div class="field" id="simRateField">
-  <label>Interest Rate</label>
-  <div class="input-group">
-    <input type="number" id="simRate" step="0.01" value="8.20" />
-    <span class="suffix">%</span>
-  </div>
-</div>
+            <div class="field" id="simRateField">
+              <label>Interest Rate</label>
+              <div class="input-group">
+                <input type="number" id="simRate" step="0.01" value="8.20" />
+                <span class="suffix">%</span>
+              </div>
+            </div>
 
-<div class="field" id="simPaymentField">
-  <label>Monthly Payment</label>
-  <div class="input-group">
-    <span class="prefix">$</span>
-    <input type="text" id="simPayment" class="money-input" value="1,026.43" />
-  </div>
-</div>
+            <div class="field" id="simPaymentField">
+              <label>Monthly Payment</label>
+              <div class="input-group">
+                <span class="prefix">$</span>
+                <input type="text" id="simPayment" class="money-input" value="1,026.43" />
+              </div>
+            </div>
 
-<div class="toolbar">
-  <button class="btn" onclick="initializeSimulation()">Build Simulation</button>
-  <button class="btn btn-secondary" onclick="loadSimulationExample()">Load Example</button>
-  <button class="btn btn-secondary" onclick="exportSimulationCSV()">Export Simulation CSV</button>
-  <button class="btn btn-secondary" onclick="downloadSimulationPDF()">Download Simulation PDF</button>
-</div>
+            <div class="toolbar">
+              <button class="btn" onclick="initializeSimulation()">Build Simulation</button>
+              <button class="btn btn-secondary" onclick="loadSimulationExample()">Load Example</button>
+              <button class="btn btn-secondary" onclick="exportSimulationCSV()">Export Simulation CSV</button>
+              <button class="btn btn-secondary" onclick="downloadSimulationPDF()">Download Simulation PDF</button>
+            </div>
           </div>
         </div>
 
@@ -748,6 +723,7 @@
 
   <script>
     let compareChartInstance = null;
+    let lastScheduleRows = [];
     let simState = {
       debt: 0,
       annualRate: 0,
@@ -758,101 +734,17 @@
       rows: []
     };
 
-    function toggleSimKnownType(){
-  const type = document.getElementById('simKnownType').value;
-  const rateField = document.getElementById('simRateField');
-  const paymentField = document.getElementById('simPaymentField');
-
-  if(type === 'rate'){
-    rateField.style.display = '';
-    paymentField.style.display = '';
-  } else {
-    rateField.style.display = '';
-    paymentField.style.display = '';
-  }
-}
-    function inferMonthlyRateFromPayment(principal, payment, months){
-  if(principal <= 0 || payment <= 0 || months <= 0) return 0;
-
-  let low = 0;
-  let high = 1; // 100% mensual como techo extremo
-  for(let i = 0; i < 100; i++){
-    const mid = (low + high) / 2;
-    const estPayment = mid === 0
-      ? principal / months
-      : principal * (mid * Math.pow(1 + mid, months)) / (Math.pow(1 + mid, months) - 1);
-
-    if(estPayment > payment){
-      high = mid;
-    } else {
-      low = mid;
-    }
-  }
-  return (low + high) / 2;
-}
-    let lastScheduleRows = [];
-
-function exportRowsToCSV(filename, rows, columns){
-  let csv = columns.map(c => `"${c.label}"`).join(',') + '\n';
-
-  rows.forEach(row => {
-    csv += columns.map(c => `"${(row[c.key] ?? '')}"`).join(',') + '\n';
-  });
-
-  const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
-  const link = document.createElement('a');
-  link.href = URL.createObjectURL(blob);
-  link.download = filename;
-  link.click();
-}
-
-function exportScheduleCSV(){
-  if(!lastScheduleRows.length) return;
-
-  exportRowsToCSV('debt_schedule.csv', lastScheduleRows.map(r => ({
-    paymentNumber: r.paymentNumber,
-    beginningBalance: r.beginningBalance.toFixed(2),
-    principalPaid: r.principalPaid.toFixed(2),
-    interest: r.interest.toFixed(2),
-    payment: r.payment.toFixed(2),
-    endingBalance: r.endingBalance.toFixed(2)
-  })), [
-    { key:'paymentNumber', label:'Payment #' },
-    { key:'beginningBalance', label:'Beginning Balance' },
-    { key:'principalPaid', label:'Principal' },
-    { key:'interest', label:'Interest' },
-    { key:'payment', label:'Payment' },
-    { key:'endingBalance', label:'Ending Balance' }
-  ]);
-}
-
-function exportSimulationCSV(){
-  if(!simState.rows.length) return;
-
-  exportRowsToCSV('simulation_amortization.csv', simState.rows.map(r => ({
-    paymentNumber: r.paymentNumber,
-    beginningBalance: r.beginningBalance.toFixed(2),
-    principalPaid: r.principalPaid.toFixed(2),
-    interest: r.interest.toFixed(2),
-    payment: r.payment.toFixed(2),
-    extraPrincipal: r.extraPrincipal.toFixed(2),
-    endingBalance: r.endingBalance.toFixed(2)
-  })), [
-    { key:'paymentNumber', label:'Payment #' },
-    { key:'beginningBalance', label:'Beginning Balance' },
-    { key:'principalPaid', label:'Principal' },
-    { key:'interest', label:'Interest' },
-    { key:'payment', label:'Payment' },
-    { key:'extraPrincipal', label:'Additional Amortization' },
-    { key:'endingBalance', label:'Ending Balance' }
-  ]);
-}
     function showPage(pageId, btn){
       document.querySelectorAll('.page').forEach(p => p.classList.remove('active'));
-      document.getElementById(pageId).classList.add('active');
+      const target = document.getElementById(pageId);
+      if(target) target.classList.add('active');
 
       document.querySelectorAll('.nav-btn').forEach(b => b.classList.remove('active'));
       if(btn) btn.classList.add('active');
+    }
+
+    function toggleSimKnownType(){
+      // Keeping both fields visible for flexibility.
     }
 
     function parseMoney(value){
@@ -874,13 +766,6 @@ function exportSimulationCSV(){
       return '$' + formatMoney(value);
     }
 
-    function formatPercent(value){
-      return Number(value || 0).toLocaleString('en-US',{
-        minimumFractionDigits:2,
-        maximumFractionDigits:2
-      }) + '%';
-    }
-
     function termToMonths(termValue, unit){
       const v = Number(termValue || 0);
       return unit === 'years' ? Math.round(v * 12) : Math.round(v);
@@ -891,6 +776,26 @@ function exportSimulationCSV(){
       const r = annualRate / 12;
       if(r === 0) return principal / months;
       return principal * (r * Math.pow(1 + r, months)) / (Math.pow(1 + r, months) - 1);
+    }
+
+    function inferMonthlyRateFromPayment(principal, payment, months){
+      if(principal <= 0 || payment <= 0 || months <= 0) return 0;
+
+      let low = 0;
+      let high = 1;
+      for(let i = 0; i < 100; i++){
+        const mid = (low + high) / 2;
+        const estPayment = mid === 0
+          ? principal / months
+          : principal * (mid * Math.pow(1 + mid, months)) / (Math.pow(1 + mid, months) - 1);
+
+        if(estPayment > payment){
+          high = mid;
+        } else {
+          low = mid;
+        }
+      }
+      return (low + high) / 2;
     }
 
     function futureValueRecurring(monthlyContribution, annualReturn, months){
@@ -904,6 +809,9 @@ function exportSimulationCSV(){
 
     function setupMoneyInputs(){
       document.querySelectorAll('.money-input').forEach(input => {
+        if (input.dataset.bound === 'true') return;
+        input.dataset.bound = 'true';
+
         input.addEventListener('focus', () => {
           input.value = input.value.replace(/,/g,'');
         });
@@ -937,7 +845,7 @@ function exportSimulationCSV(){
         month++;
         const beginningBalance = balance;
         const interest = beginningBalance * r;
-        let actualPayment = sanitizePayment(payment, interest, beginningBalance);
+        const actualPayment = sanitizePayment(payment, interest, beginningBalance);
         const principalPaid = actualPayment - interest;
         let endingBalance = beginningBalance - principalPaid;
 
@@ -977,17 +885,17 @@ function exportSimulationCSV(){
         const beginningBalance = balance;
         const interest = beginningBalance * r;
 
-        let scheduledPayment = sanitizePayment(originalPayment, interest, beginningBalance);
-        let scheduledPrincipal = scheduledPayment - interest;
+        const scheduledPayment = sanitizePayment(originalPayment, interest, beginningBalance);
+        const scheduledPrincipal = scheduledPayment - interest;
 
         let extra = extraMonthly;
         if(scheduledPrincipal + extra > beginningBalance){
           extra = Math.max(0, beginningBalance - scheduledPrincipal);
         }
 
-        let totalPrincipalPaid = scheduledPrincipal + extra;
+        const totalPrincipalPaid = scheduledPrincipal + extra;
         let endingBalance = beginningBalance - totalPrincipalPaid;
-        let actualPayment = scheduledPayment + extra;
+        const actualPayment = scheduledPayment + extra;
 
         if(endingBalance < 0.000001) endingBalance = 0;
 
@@ -1197,7 +1105,6 @@ function exportSimulationCSV(){
 
           <div class="logic">
             <strong>Logic behind the result</strong><br><br>
-
             1. The page first calculates your original contractual monthly payment:
             <strong>${formatCurrency(originalPayment)}</strong>.<br><br>
 
@@ -1209,8 +1116,7 @@ function exportSimulationCSV(){
             &nbsp;&nbsp;• <strong>Interest saved by amortizing</strong>: ${formatCurrency(interestSaved)}<br>
             &nbsp;&nbsp;• <strong>Net investment gain</strong>: ${formatCurrency(netInvestmentProfit)}<br><br>
 
-            4. In your example, comparing only <em>final investment value</em> (${formatCurrency(endInvestmentIfInvestExtra)}) to interest saved would be misleading, because
-            most of that amount is simply your own contributed money. The more meaningful figures are the <strong>net investment gain</strong>, the <strong>interest saved</strong>,
+            4. Comparing the final investment balance alone to debt interest can be misleading, because most of that amount is your own contributed money. The more meaningful figures are the <strong>net investment gain</strong>, the <strong>interest saved</strong>,
             and the <strong>ending value over the same horizon</strong> after allowing early payoff to free cash for later investing.
           </div>
         </div>
@@ -1249,6 +1155,7 @@ function exportSimulationCSV(){
       }
 
       const schedule = generateStandardSchedule(debt, annualRate, months, payment);
+      lastScheduleRows = schedule.rows;
 
       document.getElementById('schedSummary').innerHTML = `
         <div class="summary-row">
@@ -1308,57 +1215,43 @@ function exportSimulationCSV(){
       document.getElementById('schedTermUnit').value = 'months';
       document.getElementById('schedPayment').value = '';
       runDebtSchedule();
-      lastScheduleRows = schedule.rows;
     }
 
     function initializeSimulation(){
-  const debt = parseMoney(document.getElementById('simDebt').value);
-  const months = Math.round(parseFloat(document.getElementById('simMonths').value || 0));
-  const payment = parseMoney(document.getElementById('simPayment').value);
-  const knownType = document.getElementById('simKnownType').value;
-  const mode = document.getElementById('simMode').value;
+      const debt = parseMoney(document.getElementById('simDebt').value);
+      const months = Math.round(parseFloat(document.getElementById('simMonths').value || 0));
+      const payment = parseMoney(document.getElementById('simPayment').value);
+      const knownType = document.getElementById('simKnownType').value;
+      const mode = document.getElementById('simMode').value;
 
-  let annualRate = 0;
-  let finalPayment = payment;
+      let annualRate = 0;
+      let finalPayment = payment;
 
-  if(knownType === 'rate'){
-    annualRate = parseFloat(document.getElementById('simRate').value || 0) / 100;
+      if(knownType === 'rate'){
+        annualRate = parseFloat(document.getElementById('simRate').value || 0) / 100;
 
-    if(finalPayment <= 0){
-      finalPayment = paymentFromLoan(debt, annualRate, months);
-      document.getElementById('simPayment').value = formatMoney(finalPayment);
-    }
-  } else {
-    finalPayment = parseMoney(document.getElementById('simPayment').value);
-    const monthlyRate = inferMonthlyRateFromPayment(debt, finalPayment, months);
-    annualRate = monthlyRate * 12;
-    document.getElementById('simRate').value = (annualRate * 100).toFixed(4);
-  }
+        if(finalPayment <= 0){
+          finalPayment = paymentFromLoan(debt, annualRate, months);
+          document.getElementById('simPayment').value = formatMoney(finalPayment);
+        }
+      } else {
+        finalPayment = parseMoney(document.getElementById('simPayment').value);
+        const monthlyRate = inferMonthlyRateFromPayment(debt, finalPayment, months);
+        annualRate = monthlyRate * 12;
+        document.getElementById('simRate').value = (annualRate * 100).toFixed(4);
+      }
 
-  if(debt <= 0 || annualRate < 0 || months <= 0 || finalPayment <= 0){
-    document.getElementById('simSummary').innerHTML = '<div class="callout warn">Please enter valid inputs for the simulation.</div>';
-    document.getElementById('simTableWrap').innerHTML = '';
-    return;
-  }
-
-  simState = {
-    debt,
-    annualRate,
-    months,
-    payment: finalPayment,
-    mode,
-    extras: Array(months).fill(0),
-    rows: []
-  };
-
-  recalculateSimulation();
-}
+      if(debt <= 0 || annualRate < 0 || months <= 0 || finalPayment <= 0){
+        document.getElementById('simSummary').innerHTML = '<div class="callout warn">Please enter valid inputs for the simulation.</div>';
+        document.getElementById('simTableWrap').innerHTML = '';
+        return;
+      }
 
       simState = {
         debt,
         annualRate,
         months,
-        payment,
+        payment: finalPayment,
         mode,
         extras: Array(months).fill(0),
         rows: []
@@ -1420,17 +1313,16 @@ function exportSimulationCSV(){
           currentPayment = originalPayment;
         }
 
-        let scheduledPayment = sanitizePayment(currentPayment, interest, beginningBalance);
-        let principalFromScheduledPayment = scheduledPayment - interest;
+        const scheduledPayment = sanitizePayment(currentPayment, interest, beginningBalance);
+        const principalFromScheduledPayment = scheduledPayment - interest;
 
         let extraPrincipal = extras[month - 1] || 0;
         if(principalFromScheduledPayment + extraPrincipal > beginningBalance){
           extraPrincipal = Math.max(0, beginningBalance - principalFromScheduledPayment);
         }
 
-        let totalPrincipal = principalFromScheduledPayment + extraPrincipal;
+        const totalPrincipal = principalFromScheduledPayment + extraPrincipal;
         let endingBalance = beginningBalance - totalPrincipal;
-        let totalCashOut = scheduledPayment + extraPrincipal;
 
         if(endingBalance < 0.000001) endingBalance = 0;
 
@@ -1465,85 +1357,86 @@ function exportSimulationCSV(){
     }
 
     function renderSimulationSummary(rows){
-  if(!rows || !rows.length){
-    document.getElementById('simSummary').innerHTML = '<div class="callout warn">No rows to display.</div>';
-    return;
-  }
+      if(!rows || !rows.length){
+        document.getElementById('simSummary').innerHTML = '<div class="callout warn">No rows to display.</div>';
+        return;
+      }
 
-  const baseRows = buildSimulationRows(
-    simState.debt,
-    simState.annualRate,
-    simState.months,
-    simState.payment,
-    simState.mode,
-    Array(simState.months).fill(0)
-  );
+      const baseRows = buildSimulationRows(
+        simState.debt,
+        simState.annualRate,
+        simState.months,
+        simState.payment,
+        simState.mode,
+        Array(simState.months).fill(0)
+      );
 
-  const totalExtra = rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
+      const totalExtra = rows.reduce((sum, row) => sum + row.extraPrincipal, 0);
 
-  document.getElementById('simSummary').innerHTML = `
-    <div class="badge">Loan Summary</div>
+      document.getElementById('simSummary').innerHTML = `
+        <div class="badge">Loan Summary</div>
 
-    <div class="summary-row">
-      <div class="metric">
-        <div class="k">Base total interest</div>
-        <div class="v">${formatCurrency(baseRows.totalInterest)}</div>
-        <small>Without additional amortization.</small>
-      </div>
+        <div class="summary-row">
+          <div class="metric">
+            <div class="k">Base total interest</div>
+            <div class="v">${formatCurrency(baseRows.totalInterest)}</div>
+            <small>Without additional amortization.</small>
+          </div>
 
-      <div class="metric">
-        <div class="k">Simulated total interest</div>
-        <div class="v">${formatCurrency(rows.totalInterest)}</div>
-        <small>With your extra amortization inputs.</small>
-      </div>
+          <div class="metric">
+            <div class="k">Simulated total interest</div>
+            <div class="v">${formatCurrency(rows.totalInterest)}</div>
+            <small>With your extra amortization inputs.</small>
+          </div>
 
-      <div class="metric">
-        <div class="k">Interest saved</div>
-        <div class="v">${formatCurrency(baseRows.totalInterest - rows.totalInterest)}</div>
-        <small>Base case minus simulated case.</small>
-      </div>
+          <div class="metric">
+            <div class="k">Interest saved</div>
+            <div class="v">${formatCurrency(baseRows.totalInterest - rows.totalInterest)}</div>
+            <small>Base case minus simulated case.</small>
+          </div>
 
-      <div class="metric">
-        <div class="k">Total extra amortization</div>
-        <div class="v">${formatCurrency(totalExtra)}</div>
-        <small>Total additional principal entered.</small>
-      </div>
-    </div>
+          <div class="metric">
+            <div class="k">Total extra amortization</div>
+            <div class="v">${formatCurrency(totalExtra)}</div>
+            <small>Total additional principal entered.</small>
+          </div>
+        </div>
 
-    <div class="summary-row">
-      <div class="metric">
-        <div class="k">Base periods</div>
-        <div class="v">${baseRows.monthsActual}</div>
-        <small>Original schedule.</small>
-      </div>
+        <div class="summary-row">
+          <div class="metric">
+            <div class="k">Base periods</div>
+            <div class="v">${baseRows.monthsActual}</div>
+            <small>Original schedule.</small>
+          </div>
 
-      <div class="metric">
-        <div class="k">Simulated periods</div>
-        <div class="v">${rows.monthsActual}</div>
-        <small>Recalculated schedule.</small>
-      </div>
+          <div class="metric">
+            <div class="k">Simulated periods</div>
+            <div class="v">${rows.monthsActual}</div>
+            <small>Recalculated schedule.</small>
+          </div>
 
-      <div class="metric">
-        <div class="k">Periods saved</div>
-        <div class="v">${Math.max(0, baseRows.monthsActual - rows.monthsActual)}</div>
-        <small>Only meaningful in reduce term mode.</small>
-      </div>
+          <div class="metric">
+            <div class="k">Periods saved</div>
+            <div class="v">${Math.max(0, baseRows.monthsActual - rows.monthsActual)}</div>
+            <small>Only meaningful in reduce term mode.</small>
+          </div>
 
-      <div class="metric">
-        <div class="k">Mode</div>
-        <div class="v" style="font-size:18px;">${simState.mode === 'reducePayment' ? 'Reduce payment' : 'Reduce term'}</div>
-        <small>${simState.mode === 'reducePayment' ? 'Keeps remaining term, recalculates payment.' : 'Keeps payment, shortens remaining term.'}</small>
-      </div>
-    </div>
+          <div class="metric">
+            <div class="k">Mode</div>
+            <div class="v" style="font-size:18px;">${simState.mode === 'reducePayment' ? 'Reduce payment' : 'Reduce term'}</div>
+            <small>${simState.mode === 'reducePayment' ? 'Keeps remaining term, recalculates payment.' : 'Keeps payment, shortens remaining term.'}</small>
+          </div>
+        </div>
 
-    <div class="logic">
-      <strong>How the calculation works</strong><br><br>
-      ${simState.mode === 'reducePayment'
-        ? `Whenever you enter additional amortization in a period, the next period starts with a lower balance and the payment is recalculated over the remaining original term.`
-        : `Whenever you enter additional amortization in a period, the next period starts with a lower balance but the payment stays the same. Because the payment remains fixed, the loan finishes earlier and the term shortens.`}
-    </div>
-  `;
-}
+        <div class="logic">
+          <strong>How the calculation works</strong><br><br>
+          ${simState.mode === 'reducePayment'
+            ? `Whenever you enter additional amortization in a period, the next period starts with a lower balance and the payment is recalculated over the remaining original term.`
+            : `Whenever you enter additional amortization in a period, the next period starts with a lower balance but the payment stays the same. Because the payment remains fixed, the loan finishes earlier and the term shortens.`}
+        </div>
+      `;
+    }
+
     function renderSimulationTable(rows){
       const rowsHtml = rows.map((row, idx) => `
         <tr>
@@ -1603,50 +1496,107 @@ function exportSimulationCSV(){
 
     function loadSimulationExample(){
       document.getElementById('simMode').value = 'reduceTerm';
+      document.getElementById('simKnownType').value = 'rate';
       document.getElementById('simDebt').value = formatMoney(73847.50);
       document.getElementById('simRate').value = '8.20';
       document.getElementById('simMonths').value = '110';
-      document.getElementById('simPayment').value = formatMoney(957.16);
+      document.getElementById('simPayment').value = formatMoney(1026.43);
       initializeSimulation();
     }
 
+    function exportRowsToCSV(filename, rows, columns){
+      let csv = columns.map(c => `"${c.label}"`).join(',') + '\n';
+
+      rows.forEach(row => {
+        csv += columns.map(c => `"${(row[c.key] ?? '')}"`).join(',') + '\n';
+      });
+
+      const blob = new Blob([csv], { type: 'text/csv;charset=utf-8;' });
+      const link = document.createElement('a');
+      link.href = URL.createObjectURL(blob);
+      link.download = filename;
+      link.click();
+    }
+
+    function exportScheduleCSV(){
+      if(!lastScheduleRows.length) return;
+
+      exportRowsToCSV('debt_schedule.csv', lastScheduleRows.map(r => ({
+        paymentNumber: r.paymentNumber,
+        beginningBalance: r.beginningBalance.toFixed(2),
+        principalPaid: r.principalPaid.toFixed(2),
+        interest: r.interest.toFixed(2),
+        payment: r.payment.toFixed(2),
+        endingBalance: r.endingBalance.toFixed(2)
+      })), [
+        { key:'paymentNumber', label:'Payment #' },
+        { key:'beginningBalance', label:'Beginning Balance' },
+        { key:'principalPaid', label:'Principal' },
+        { key:'interest', label:'Interest' },
+        { key:'payment', label:'Payment' },
+        { key:'endingBalance', label:'Ending Balance' }
+      ]);
+    }
+
+    function exportSimulationCSV(){
+      if(!simState.rows.length) return;
+
+      exportRowsToCSV('simulation_amortization.csv', simState.rows.map(r => ({
+        paymentNumber: r.paymentNumber,
+        beginningBalance: r.beginningBalance.toFixed(2),
+        principalPaid: r.principalPaid.toFixed(2),
+        interest: r.interest.toFixed(2),
+        payment: r.payment.toFixed(2),
+        extraPrincipal: r.extraPrincipal.toFixed(2),
+        endingBalance: r.endingBalance.toFixed(2)
+      })), [
+        { key:'paymentNumber', label:'Payment #' },
+        { key:'beginningBalance', label:'Beginning Balance' },
+        { key:'principalPaid', label:'Principal' },
+        { key:'interest', label:'Interest' },
+        { key:'payment', label:'Payment' },
+        { key:'extraPrincipal', label:'Additional Amortization' },
+        { key:'endingBalance', label:'Ending Balance' }
+      ]);
+    }
+
     function downloadSchedulePDF(){
-  const content = document.getElementById('schedTableWrap').innerHTML;
-  openPrintWindow('Debt Schedule PDF', content);
-}
+      const content = document.getElementById('schedTableWrap').innerHTML;
+      openPrintWindow('Debt Schedule PDF', content);
+    }
 
-function downloadSimulationPDF(){
-  const content = document.getElementById('simTableWrap').innerHTML;
-  openPrintWindow('Simulation Amortization PDF', content);
-}
+    function downloadSimulationPDF(){
+      const content = document.getElementById('simTableWrap').innerHTML;
+      openPrintWindow('Simulation Amortization PDF', content);
+    }
 
-function openPrintWindow(title, content){
-  const w = window.open('', '_blank');
-  w.document.write(`
-    <html>
-    <head>
-      <title>${title}</title>
-      <style>
-        body{ font-family: Arial, sans-serif; padding:20px; }
-        table{ width:100%; border-collapse:collapse; font-size:12px; }
-        th,td{ border:1px solid #ccc; padding:6px; text-align:right; }
-        th:first-child, td:first-child{ text-align:center; }
-        h1{ font-size:20px; }
-      </style>
-    </head>
-    <body>
-      <h1>${title}</h1>
-      ${content}
-      <script>
-        window.onload = function(){
-          window.print();
-        }
-      <\/script>
-    </body>
-    </html>
-  `);
-  w.document.close();
-}
+    function openPrintWindow(title, content){
+      const w = window.open('', '_blank');
+      w.document.write(`
+        <html>
+        <head>
+          <title>${title}</title>
+          <style>
+            body{ font-family: Arial, sans-serif; padding:20px; }
+            table{ width:100%; border-collapse:collapse; font-size:12px; }
+            th,td{ border:1px solid #ccc; padding:6px; text-align:right; }
+            th:first-child, td:first-child{ text-align:center; }
+            h1{ font-size:20px; }
+          </style>
+        </head>
+        <body>
+          <h1>${title}</h1>
+          ${content}
+          <script>
+            window.onload = function(){
+              window.print();
+            }
+          <\/script>
+        </body>
+        </html>
+      `);
+      w.document.close();
+    }
 
     setupMoneyInputs();
     loadDebtVsInvestExample();
